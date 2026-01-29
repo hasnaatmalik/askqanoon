@@ -8,6 +8,7 @@ AskQanoon is a premium, RAG-powered legal information assistant designed to help
 - **Bilingual Support**: Ask questions in English or Roman Urdu.
 - **Chat Interface**: Clean, intuitive chat-based interaction.
 - **Conversational Memory**: Support for follow-up questions within the same session.
+- **User Management**: (Upcoming) Store user profiles and conversation history for personalized experience.
 
 ### Legal Information Retrieval (RAG Core)
 - **Knowledge Base**: Curated data from PPC, CrPC, Family Laws, and PECA.
@@ -32,6 +33,7 @@ AskQanoon is a premium, RAG-powered legal information assistant designed to help
 
 - **Frontend**: Next.js + Tailwind CSS + Shadcn UI + Framer Motion.
 - **Backend/Orchestration**: Next.js API routes integrated with **LangChain**.
+- **Database (ORM)**: **Prisma** with a relational/NoSQL database for user data.
 - **AI Model**: Google Gemini 3 (for reasoning, summarization, and safe generation).
 - **Vector Database**: Pinecone (Free Tier) for storage and retrieval.
 - **Embeddings**: Gemini Text Embedding model.
