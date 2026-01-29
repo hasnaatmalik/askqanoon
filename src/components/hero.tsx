@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Search, ArrowRight, Gavel, ShieldCheck, Languages } from "lucide-react";
+import { Search, Gavel, ShieldCheck, Languages } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +14,16 @@ const suggestions = [
     "Process for cybercrime complaint?",
 ];
 
-export function Hero() {
+export function Hero({ onSearch }: { onSearch: (val: string) => void }) {
+    const [searchValue, setSearchValue] = useState("");
+
+    const handleSubmit = (e?: React.FormEvent) => {
+        e?.preventDefault();
+        if (searchValue.trim()) {
+            onSearch(searchValue);
+        }
+    };
+
     return (
         <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden pt-20">
             {/* Background decoration */}
@@ -48,19 +58,25 @@ export function Hero() {
                     transition={{ duration: 0.5, delay: 0.2 }}
                     className="mx-auto mt-10 max-w-2xl"
                 >
-                    <div className="relative group">
+                    <form onSubmit={handleSubmit} className="relative group">
                         <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-primary/50 to-secondary/50 opacity-20 blur transition duration-1000 group-hover:opacity-40" />
                         <div className="relative flex items-center rounded-2xl border border-border/50 bg-background/80 p-2 shadow-2xl backdrop-blur-md">
                             <Search className="ml-4 h-5 w-5 text-muted-foreground" />
                             <Input
                                 placeholder="Ex: What are the requirements for a valid nikkah?"
                                 className="border-0 bg-transparent text-lg focus-visible:ring-0 focus-visible:ring-offset-0"
+                                value={searchValue}
+                                onChange={(e) => setSearchValue(e.target.value)}
                             />
-                            <Button size="lg" className="h-12 rounded-xl bg-primary px-8 text-primary-foreground transition-all hover:bg-primary/90">
+                            <Button
+                                type="submit"
+                                size="lg"
+                                className="h-12 rounded-xl bg-primary px-8 text-primary-foreground transition-all hover:bg-primary/90"
+                            >
                                 Ask Qanoon
                             </Button>
                         </div>
-                    </div>
+                    </form>
 
                     <div className="mt-6 flex flex-wrap justify-center gap-3">
                         {suggestions.map((suggestion, i) => (
@@ -70,6 +86,7 @@ export function Hero() {
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ duration: 0.3, delay: 0.4 + i * 0.1 }}
                                 className="rounded-full border border-border/50 bg-background/50 px-4 py-1.5 text-sm font-medium text-muted-foreground transition-all hover:border-primary/50 hover:bg-primary/5 hover:text-primary"
+                                onClick={() => onSearch(suggestion)}
                             >
                                 {suggestion}
                             </motion.button>
