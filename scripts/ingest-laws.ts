@@ -12,15 +12,18 @@ async function run() {
     const filePath = path.join(process.cwd(), "data", "laws.txt");
 
     if (!fs.existsSync(filePath)) {
-        console.error("Error: data/laws.txt not found. Please create it and add legal text.");
+        console.error("Error: data/laws.txt not found.");
         process.exit(1);
     }
 
-    const text = fs.readFileSync(filePath, "utf8");
+    const fullText = fs.readFileSync(filePath, "utf8");
+
+    // Split by the --- separator
+    const rawSections = fullText.split(/\n---\n/);
 
     console.log("Initializing AI models and vector store...");
     const embeddings = new GoogleGenerativeAIEmbeddings({
-        modelName: "embedding-001",
+        modelName: "text-embedding-004",
         apiKey: process.env.GOOGLE_API_KEY,
     });
 
@@ -29,28 +32,55 @@ async function run() {
     });
     const index = pc.Index(process.env.PINECONE_INDEX!);
 
-    console.log("Splitting text into chunks...");
+    console.log("Cleaning up previous data in the index...");
+    try {
+        await index.deleteAll();
+    } catch (e) {
+        console.log("Note: Could not clear index (it might already be empty).");
+    }
+
     const splitter = new RecursiveCharacterTextSplitter({
-        chunkSize: 500,
-        chunkOverlap: 50,
+        chunkSize: 800,
+        chunkOverlap: 100,
     });
 
-    const docs = await splitter.createDocuments([text], [
-        {
-            law_name: "Pakistan Penal Code",
-            section_number: "Multiple",
-            topic: "General"
-        }
-    ]);
+    const allDocs = [];
 
-    console.log(`Uploading ${docs.length} chunks to Pinecone...`);
+    for (const rawSection of rawSections) {
+        const lines = rawSection.trim().split("\n");
+        if (lines.length === 0 || !lines[0].trim()) continue;
 
-    await PineconeStore.fromDocuments(docs, embeddings, {
+        // The first line is historically our Law Title
+        const lawName = lines[0].trim();
+        const content = lines.slice(1).join("\n").trim();
+
+        console.log(`Processing law: ${lawName}`);
+
+        const docs = await splitter.createDocuments([content], [
+            {
+                law_name: lawName,
+                section_number: "Multiple",
+                topic: "General"
+            }
+        ]);
+
+        allDocs.push(...docs);
+    }
+
+    console.log(`Uploading ${allDocs.length} chunks to Pinecone...`);
+
+    // Clear and Re-ingest
+    // Note: For a hackathon, we replace the index content by using 
+    // PineconeStore.fromDocuments which creates a new instance.
+    // To avoid duplicates if the index is persistent, we would ideally 
+    // delete first, but for now we'll just push these docs.
+
+    await PineconeStore.fromDocuments(allDocs, embeddings, {
         pineconeIndex: index,
         textKey: "text",
     });
 
-    console.log("✅ Ingestion successfully completed!");
+    console.log("✅ Dynamic Ingestion successfully completed!");
 }
 
 run().catch((err) => {

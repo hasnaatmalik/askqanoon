@@ -14,14 +14,14 @@ export class RAGService {
 
     constructor() {
         this.model = new ChatGoogleGenerativeAI({
-            modelName: "gemini-1.5-pro",
+            model: "gemini-1.5-flash",
             maxOutputTokens: 2048,
             apiKey: process.env.GOOGLE_API_KEY,
             temperature: 0,
         });
 
         this.embeddings = new GoogleGenerativeAIEmbeddings({
-            modelName: "embedding-001",
+            modelName: "text-embedding-004",
             apiKey: process.env.GOOGLE_API_KEY,
         });
 
@@ -67,7 +67,7 @@ export class RAGService {
 
             const chain = RunnableSequence.from([
                 {
-                    context: async (input: { question: string }) => {
+                    context: async (input: any) => {
                         const docs = await retriever.invoke(input.question);
                         return docs.map(d => d.pageContent).join("\n\n");
                     },
@@ -80,13 +80,30 @@ export class RAGService {
             ]);
 
             // Get documents for citations
-            const docs = await retriever.invoke(question);
+            let docs: Document[] = [];
+            try {
+                docs = await retriever.invoke(question);
+            } catch (pineconeError) {
+                console.error("Pinecone Retrieval Error:", pineconeError);
+                // Continue with empty docs if retrieval fails, allowing the LLM to at least answer from its general memory or say it doesn't know.
+                // However, AskQanoon rules state ONLY use context. So we must be careful.
+            }
             const answer = await chain.invoke({
                 question,
                 language_instruction: languageInstruction
             });
 
-            const sources = docs.map((doc: Document) => ({
+            const noInfoPhrases = [
+                "I don't have enough information",
+                "I apologize, but I don't have information",
+                "meray paas is baray mein malomat nahi"
+            ];
+
+            const hasNoInfo = noInfoPhrases.some(phrase =>
+                answer.toLowerCase().includes(phrase.toLowerCase())
+            );
+
+            const sources = hasNoInfo ? [] : docs.map((doc: Document) => ({
                 law: doc.metadata.law_name || "Unknown Law",
                 section: doc.metadata.section_number || "N/A",
                 content: doc.pageContent.substring(0, 150) + "..."
