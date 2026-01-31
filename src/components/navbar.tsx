@@ -56,16 +56,16 @@ export function Navbar() {
                         <>
                             <Button
                                 variant="ghost"
-                                onClick={() => signIn("google")}
                                 className="hidden border-primary/20 hover:bg-primary/5 hover:text-primary md:inline-flex"
+                                asChild
                             >
-                                Login
+                                <Link href="/login">Login</Link>
                             </Button>
                             <Button
-                                onClick={() => signIn("google")}
                                 className="bg-primary text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:scale-105 hover:bg-primary/90 active:scale-95"
+                                asChild
                             >
-                                Get Started
+                                <Link href="/register">Get Started</Link>
                             </Button>
                         </>
                     )}
