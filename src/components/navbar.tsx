@@ -5,6 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Scale, User } from "lucide-react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ModeToggle } from "@/components/mode-toggle";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function Navbar() {
     const { data: session } = useSession();
@@ -21,37 +28,82 @@ export function Navbar() {
                     </span>
                 </Link>
                 <div className="hidden items-center gap-6 md:flex">
-                    <Link href="#features" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-                        How it works
-                    </Link>
-                    <Link href="#about" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-                        About
-                    </Link>
-                    <Link href="#disclaimer" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-                        Disclaimer
-                    </Link>
+                    {session ? (
+                        <>
+                            <Link href="/dashboard" className="text-sm font-medium text-foreground transition-colors hover:text-primary">
+                                Dashboard
+                            </Link>
+                            <Link href="/chat" className="text-sm font-medium text-foreground transition-colors hover:text-primary">
+                                Ask AI
+                            </Link>
+                            <Link href="/dashboard/profile" className="text-sm font-medium text-foreground transition-colors hover:text-primary">
+                                Profile
+                            </Link>
+                        </>
+                    ) : (
+                        <>
+                            <Link href="#features" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+                                How it works
+                            </Link>
+                            <Link href="#about" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+                                About
+                            </Link>
+                            <Link href="#disclaimer" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+                                Disclaimer
+                            </Link>
+                        </>
+                    )}
                 </div>
                 <div className="flex items-center gap-4">
+                    <ModeToggle />
                     {session ? (
-                        <div className="flex items-center gap-4">
-                            <div className="hidden flex-col items-end md:flex">
-                                <span className="text-sm font-semibold tracking-tight text-foreground">
-                                    {session.user?.name}
-                                </span>
-                                <button
-                                    onClick={() => signOut()}
-                                    className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground transition-colors hover:text-primary"
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                                    <Avatar className="h-9 w-9 border-2 border-primary/10 transition-transform hover:scale-105">
+                                        <AvatarImage src={session.user?.image || ""} />
+                                        <AvatarFallback className="bg-primary text-primary-foreground">
+                                            <User className="h-4 w-4" />
+                                        </AvatarFallback>
+                                    </Avatar>
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-56" align="end" forceMount>
+                                <div className="flex items-center justify-start gap-2 p-2">
+                                    <div className="flex flex-col space-y-1 leading-none">
+                                        {session.user?.name && (
+                                            <p className="font-medium">{session.user.name}</p>
+                                        )}
+                                        {session.user?.email && (
+                                            <p className="w-[200px] truncate text-xs text-muted-foreground">
+                                                {session.user.email}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                                <DropdownMenuItem asChild>
+                                    <Link href="/dashboard" className="cursor-pointer">
+                                        Dashboard
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem asChild>
+                                    <Link href="/dashboard/profile" className="cursor-pointer">
+                                        Profile
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem asChild>
+                                    <Link href="/dashboard/settings" className="cursor-pointer">
+                                        Settings
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    className="text-red-600 focus:text-red-600 cursor-pointer"
+                                    onClick={() => signOut({ callbackUrl: "/" })}
                                 >
-                                    Logout
-                                </button>
-                            </div>
-                            <Avatar className="h-9 w-9 border-2 border-primary/10 transition-transform hover:scale-105">
-                                <AvatarImage src={session.user?.image || ""} />
-                                <AvatarFallback className="bg-primary text-primary-foreground">
-                                    <User className="h-4 w-4" />
-                                </AvatarFallback>
-                            </Avatar>
-                        </div>
+                                    Log out
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     ) : (
                         <>
                             <Button

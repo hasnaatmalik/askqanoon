@@ -36,7 +36,7 @@ export default function LoginForm() {
                 return;
             }
 
-            router.push("/");
+            router.push("/dashboard");
             router.refresh();
         } catch (error) {
             setError("Something went wrong");
