@@ -51,7 +51,9 @@ export class RAGService {
         2. If the answer is not in the context, say "I don't have enough information in my legal database to answer this specific query. Please consult a qualified lawyer."
         3. Do NOT give legal advice, verdicts, or guarantees. 
         4. Always maintain a neutral, informative tone.
-        5. Output language: {language_instruction}
+        5. CITATIONS: ALWAYS cite the specific Law Name and Section Number in your answer text if available in the context (e.g. 'According to Section 302 of PPC...').
+        6. PROCEDURES: If the user asks for a procedure (e.g. how to file FIR, how to divorce), YOU MUST provide the answer in a clear, STEP-BY-STEP format (1, 2, 3...).
+        7. Output language: {language_instruction}
 
         CONTEXT FROM PAKISTANI LAWS:
         {context}
@@ -62,7 +64,7 @@ export class RAGService {
       `);
 
             const languageInstruction = useRomanUrdu
-                ? "Respond in Roman Urdu (Urdu written in Latin script)."
+                ? "Respond in Roman Urdu (Urdu written in Latin script). Keep simplified English terms for specific legal concepts (like FIR, Bail) where commonly used."
                 : "Respond in simple English.";
 
             const chain = RunnableSequence.from([

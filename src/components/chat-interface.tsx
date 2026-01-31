@@ -15,7 +15,8 @@ import {
     Plus,
     MessageSquare,
     PanelLeftClose,
-    PanelLeftOpen
+    PanelLeftOpen,
+    Mic
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -234,6 +235,14 @@ export function ChatInterface({
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="gap-2 hidden sm:flex text-muted-foreground hover:text-primary"
+                            onClick={() => alert("Voice input coming soon!")}
+                        >
+                            <Mic className="h-4 w-4" />
+                        </Button>
                         <Button
                             variant="outline"
                             size="sm"
