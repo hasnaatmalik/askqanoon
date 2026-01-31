@@ -31,7 +31,10 @@ export default function RegisterForm() {
                 password,
             });
 
-            setSuccess("Account created! Please check your email to verify your account.");
+            setSuccess("Account created! Redirecting to login...");
+            setTimeout(() => {
+                router.push("/login");
+            }, 1000);
         } catch (error: any) {
             setError(error.response?.data || "Something went wrong");
         } finally {

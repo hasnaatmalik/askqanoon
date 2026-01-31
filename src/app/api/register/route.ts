@@ -34,8 +34,8 @@ export async function POST(req: Request) {
             },
         });
 
-        const verificationToken = await generateVerificationToken(email);
-        await sendVerificationEmail(verificationToken.identifier, verificationToken.token);
+        // const verificationToken = await generateVerificationToken(email);
+        // await sendVerificationEmail(verificationToken.identifier, verificationToken.token);
 
         return NextResponse.json(user);
     } catch (error) {
