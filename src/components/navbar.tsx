@@ -13,7 +13,12 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export function Navbar() {
+interface NavbarProps {
+    onVideoClick?: () => void;
+    onDepositionClick?: () => void;
+}
+
+export function Navbar({ onVideoClick, onDepositionClick }: NavbarProps) {
     const { data: session } = useSession();
 
     return (
@@ -36,23 +41,26 @@ export function Navbar() {
                             <Link href="/chat" className="text-sm font-medium text-foreground transition-colors hover:text-primary">
                                 Ask AI
                             </Link>
-                            <Link href="/dashboard/profile" className="text-sm font-medium text-foreground transition-colors hover:text-primary">
-                                Profile
-                            </Link>
                         </>
                     ) : (
                         <>
                             <Link href="#features" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
                                 How it works
                             </Link>
-                            <Link href="#about" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-                                About
-                            </Link>
-                            <Link href="#disclaimer" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-                                Disclaimer
-                            </Link>
                         </>
                     )}
+                    <button
+                        onClick={onVideoClick}
+                        className="text-xs font-bold text-primary bg-primary/5 px-3 py-1.5 rounded-lg transition-all hover:bg-primary/10"
+                    >
+                        Video Forensic
+                    </button>
+                    <button
+                        onClick={onDepositionClick}
+                        className="text-xs font-bold text-secondary bg-secondary/5 px-3 py-1.5 rounded-lg transition-all hover:bg-secondary/10"
+                    >
+                        Deposition Prep
+                    </button>
                 </div>
                 <div className="flex items-center gap-4">
                     <ModeToggle />

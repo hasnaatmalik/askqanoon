@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import pdf from 'pdf-parse';
+import { PDFParse as pdf } from 'pdf-parse';
 import axios from 'axios';
 import https from 'https';
 
@@ -61,8 +61,8 @@ async function downloadAndConvert() {
             // Convert to Text
             console.log(`Converting ${doc.name} to text...`);
             const dataBuffer = fs.readFileSync(pdfPath);
-            // Fixed pdf-parse call for ES modules
-            const data = await pdf(dataBuffer);
+            const parser = new pdf({ data: dataBuffer });
+            const data = await parser.getText();
 
             const cleanText = data.text
                 .replace(/\n\s*\n/g, '\n\n')
@@ -73,7 +73,7 @@ async function downloadAndConvert() {
             fs.appendFileSync(OUTPUT_FILE, `\n\n--- END OF ${doc.name} ---\n\n`);
 
             console.log(`✅ ${doc.name} added to database.`);
-        } catch (error) {
+        } catch (error: any) {
             console.error(`❌ Error processing ${doc.name}:`, error.message);
         }
     }
