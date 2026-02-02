@@ -6,6 +6,7 @@ import { Scale, User } from "lucide-react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ModeToggle } from "@/components/mode-toggle";
+import { DailyTipPopup } from "@/components/notifications/daily-tip-popup";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -63,6 +64,7 @@ export function Navbar({ onVideoClick, onDepositionClick }: NavbarProps) {
                     </button>
                 </div>
                 <div className="flex items-center gap-4">
+                    <DailyTipPopup />
                     <ModeToggle />
                     {session ? (
                         <DropdownMenu>

@@ -25,6 +25,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { useSession } from "next-auth/react";
+import { VoiceInput } from "@/components/voice-input";
 
 interface Message {
     id: string;
@@ -235,14 +236,13 @@ export function ChatInterface({
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            className="gap-2 hidden sm:flex text-muted-foreground hover:text-primary"
-                            onClick={() => alert("Voice input coming soon!")}
-                        >
-                            <Mic className="h-4 w-4" />
-                        </Button>
+                        <div className="hidden sm:flex">
+                            <VoiceInput
+                                onTranscript={(text) => setInput(text)}
+                                language={useRomanUrdu ? "ur-PK" : "en-US"}
+                                size="sm"
+                            />
+                        </div>
                         <Button
                             variant="outline"
                             size="sm"
@@ -324,6 +324,12 @@ export function ChatInterface({
                 <div className="border-t border-border/40 bg-background/80 p-4 backdrop-blur-md">
                     <div className="mx-auto max-w-3xl">
                         <div className="relative flex items-center gap-2">
+                            <VoiceInput
+                                onTranscript={(text) => setInput(text)}
+                                language={useRomanUrdu ? "ur-PK" : "en-US"}
+                                size="lg"
+                                className="sm:hidden"
+                            />
                             <div className="group relative flex-1">
                                 <div className="absolute -inset-0.5 rounded-xl bg-gradient-to-r from-primary/50 to-secondary/50 opacity-10 blur transition group-focus-within:opacity-30" />
                                 <Input

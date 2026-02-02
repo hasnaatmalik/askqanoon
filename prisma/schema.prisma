@@ -44,6 +44,8 @@ model User {
   accounts      Account[]
   sessions      Session[]
   conversations Conversation[]
+  forumThreads  ForumThread[]
+  forumReplies  ForumReply[]
   createdAt     DateTime  @default(now())
 }
 
@@ -83,8 +85,8 @@ model CaseLaw {
   date      DateTime
   year      Int
   topic     String
-  summary   String // SQL does not support @db.Text in implicit SQLite usually, but String is fine. SQLite handles text.
-  tags      String // Comma separated
+  summary   String
+  tags      String   // Comma separated
   sourceUrl String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -99,4 +101,33 @@ model Right {
   details     String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model ForumThread {
+  id          String       @id @default(cuid())
+  title       String
+  content     String
+  category    String
+  authorId    String?
+  authorName  String
+  authorRole  String       // "Lawyer" | "Student" | "Citizen"
+  isAnonymous Boolean      @default(false)
+  views       Int          @default(0)
+  user        User?        @relation(fields: [authorId], references: [id])
+  replies     ForumReply[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model ForumReply {
+  id          String      @id @default(cuid())
+  content     String
+  threadId    String
+  thread      ForumThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  authorId    String?
+  authorName  String
+  authorRole  String
+  isAnonymous Boolean     @default(false)
+  user        User?       @relation(fields: [authorId], references: [id])
+  createdAt   DateTime    @default(now())
 }

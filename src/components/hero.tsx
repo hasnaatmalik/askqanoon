@@ -6,6 +6,7 @@ import { Search, Gavel, ShieldCheck, Languages } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { VoiceInput } from "@/components/voice-input";
 
 const suggestions = [
     "How to file an FIR?",
@@ -67,6 +68,11 @@ export function Hero({ onSearch }: { onSearch: (val: string) => void }) {
                                 className="border-0 bg-transparent text-lg focus-visible:ring-0 focus-visible:ring-offset-0"
                                 value={searchValue}
                                 onChange={(e) => setSearchValue(e.target.value)}
+                            />
+                            <VoiceInput
+                                onTranscript={(text) => setSearchValue(text)}
+                                size="default"
+                                className="mr-2"
                             />
                             <Button
                                 type="button"

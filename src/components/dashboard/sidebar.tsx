@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, MessageSquare, History, User, Settings, LogOut, FileText, Scale, Search, Users, BookOpen } from "lucide-react";
+import { Home, MessageSquare, History, User, Settings, LogOut, FileText, Scale, Search, Users, BookOpen, Video, Mic } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -43,6 +43,16 @@ const sidebarItems = [
         title: "Know Your Rights",
         href: "/dashboard/rights",
         icon: BookOpen,
+    },
+    {
+        title: "Video Forensic",
+        href: "/dashboard/video-forensic",
+        icon: Video,
+    },
+    {
+        title: "Deposition Prep",
+        href: "/dashboard/deposition",
+        icon: Mic,
     },
     {
         title: "Chat History",
