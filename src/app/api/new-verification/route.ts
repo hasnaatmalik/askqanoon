@@ -43,18 +43,11 @@ export async function POST(req: Request) {
             }
         });
 
-        await prisma.verificationToken.delete({
+        await prisma.verificationToken.deleteMany({
             where: {
-                token_identifier: { // Assuming composite key but actually we can deleteMany
-                    token: existingToken.token,
-                    identifier: existingToken.identifier
-                }
+                token: existingToken.token,
+                identifier: existingToken.identifier
             }
-        }).catch(async () => {
-            // Fallback if key structure is different, though we used deleteMany earlier in tokens.ts
-            await prisma.verificationToken.deleteMany({
-                where: { identifier: existingToken.identifier }
-            });
         });
 
         return new NextResponse("Email verified", { status: 200 });

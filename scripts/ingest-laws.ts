@@ -9,17 +9,13 @@ import * as path from "path";
 dotenv.config();
 
 async function run() {
-    const filePath = path.join(process.cwd(), "data", "laws.txt");
+    const dataDir = path.join(process.cwd(), "data");
+    const files = fs.readdirSync(dataDir).filter(f => f.endsWith(".txt"));
 
-    if (!fs.existsSync(filePath)) {
-        console.error("Error: data/laws.txt not found.");
+    if (files.length === 0) {
+        console.error("Error: No .txt files found in data/ directory.");
         process.exit(1);
     }
-
-    const fullText = fs.readFileSync(filePath, "utf8");
-
-    // Split by the --- separator
-    const rawSections = fullText.split(/\n---\n/);
 
     console.log("Initializing AI models and vector store...");
     const embeddings = new GoogleGenerativeAIEmbeddings({
@@ -46,25 +42,41 @@ async function run() {
 
     const allDocs = [];
 
-    for (const rawSection of rawSections) {
-        const lines = rawSection.trim().split("\n");
-        if (lines.length === 0 || !lines[0].trim()) continue;
+    for (const file of files) {
+        console.log(`Reading file: ${file}`);
+        const fullText = fs.readFileSync(path.join(dataDir, file), "utf8");
+        const rawSections = fullText.split(/\n---\n/);
 
-        // The first line is historically our Law Title
-        const lawName = lines[0].trim();
-        const content = lines.slice(1).join("\n").trim();
+        for (const rawSection of rawSections) {
+            const lines = rawSection.trim().split("\n");
+            if (lines.length === 0 || !lines[0].trim()) continue;
 
-        console.log(`Processing law: ${lawName}`);
+            // Header parsing
+            let lawName = lines[0].trim();
+            let jurisdiction = "Pakistan"; // Default
+            let contentStartIndex = 1;
 
-        const docs = await splitter.createDocuments([content], [
-            {
-                law_name: lawName,
-                section_number: "Multiple",
-                topic: "General"
+            // Check if second line is Jurisdiction
+            if (lines.length > 1 && lines[1].toLowerCase().startsWith("jurisdiction:")) {
+                jurisdiction = lines[1].split(":")[1].trim();
+                contentStartIndex = 2;
             }
-        ]);
 
-        allDocs.push(...docs);
+            const content = lines.slice(contentStartIndex).join("\n").trim();
+
+            console.log(`Processing law: ${lawName} (${jurisdiction})`);
+
+            const docs = await splitter.createDocuments([content], [
+                {
+                    law_name: lawName,
+                    section_number: "Multiple",
+                    topic: "General",
+                    jurisdiction: jurisdiction
+                }
+            ]);
+
+            allDocs.push(...docs);
+        }
     }
 
     console.log(`Uploading ${allDocs.length} chunks to Pinecone...`);

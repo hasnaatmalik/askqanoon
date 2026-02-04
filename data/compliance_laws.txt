@@ -1,0 +1,17 @@
+GDPR Data Retention
+Jurisdiction: EU
+---
+Section 5(1)(e): Storage Limitation
+Personal data shall be kept in a form which permits identification of data subjects for no longer than is necessary for the purposes for which the personal data are processed.
+---
+CCPA Data Retention
+Jurisdiction: California
+---
+Section 1798.105: Deletion Rights
+A consumer shall have the right to request that a business delete any personal information about the consumer which the business has collected from the consumer.
+---
+SEC Recordkeeping
+Jurisdiction: USA Fed
+---
+Rule 17a-4: Records to be Preserved
+Every member, broker and dealer subject to § 240.17a-3 shall preserve for a period of not less than six years, the first two years in an easily accessible place, all records required to be made pursuant to paragraphs § 240.17a-3(a)(1), (a)(2), (a)(3), (a)(5), (a)(21), (a)(22), and numerical chronological ledgers.

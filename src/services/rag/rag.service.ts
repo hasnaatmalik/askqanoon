@@ -131,6 +131,83 @@ export class RAGService {
             };
         }
     }
+    async compareRegulations(topic: string, jurisdictions: string[]) {
+        try {
+            const vectorStore = await this.getVectorStore();
+
+            // 1. Retrieve documents for each jurisdiction specifically
+            // We do this to ensure we get relevant laws for EACH requested jurisdiction
+            // rather than just the top K global matches which might be all from one jurisdiction.
+            const allDocs: Record<string, Document[]> = {};
+
+            for (const jurisdiction of jurisdictions) {
+                const retriever = vectorStore.asRetriever({
+                    k: 3,
+                    filter: { jurisdiction: jurisdiction }
+                });
+
+                try {
+                    const docs = await retriever.invoke(topic);
+                    allDocs[jurisdiction] = docs;
+                } catch (e) {
+                    console.error(`Error fetching for ${jurisdiction}:`, e);
+                    allDocs[jurisdiction] = [];
+                }
+            }
+
+            // 2. Construct context
+            let contextParts = [];
+            for (const [jur, docs] of Object.entries(allDocs)) {
+                const jurDocs = docs.map(d => `- [${d.metadata.law_name || "Law"}]: ${d.pageContent.substring(0, 300)}...`).join("\n");
+                contextParts.push(`JURISDICTION: ${jur}\n${jurDocs || "No specific laws found."}`);
+            }
+
+            const context = contextParts.join("\n\n");
+
+            // 3. Prompt for matrix generation
+            const prompt = PromptTemplate.fromTemplate(`
+                You are a Legal Compliance Expert.
+                Task: Compare regulations across different jurisdictions for the topic: "{topic}".
+                
+                CONTEXT:
+                {context}
+                
+                INSTRUCTIONS:
+                1. Identify key compliance requirements for each jurisdiction.
+                2. Detect CONFLICTS or DIVERGENCES (e.g., Jurisdiction A requires 5 years retention, B requires 2).
+                3. Rate the "Conflict Level" (High/Medium/Low).
+                4. Output valid JSON in the following format:
+                {{
+                    "analysis": "Brief summary of the comparison",
+                    "conflictLevel": "High" | "Medium" | "Low",
+                    "matrix": [
+                        {{ "jurisdiction": "Name", "requirement": "Brief requirement summary", "status": "Compliant" | "Stricter" | "Lax" }}
+                    ],
+                    "conflicts": [ "Conflict 1 description", "Conflict 2 description" ]
+                }}
+            `);
+
+            const chain = RunnableSequence.from([
+                prompt,
+                this.model,
+                new StringOutputParser(),
+            ]);
+
+            const result = await chain.invoke({
+                topic,
+                context
+            });
+
+            // Clean markdown code blocks if present
+            const cleanJson = result.replace(/```json/g, "").replace(/```/g, "").trim();
+
+            return JSON.parse(cleanJson);
+
+        } catch (error) {
+            console.error("Comparison Error:", error);
+            throw new Error("Failed to compare regulations");
+        }
+    }
 
     async ingestDocs(docs: { content: string; metadata: any }[]) {
         const vectorStore = await this.getVectorStore();

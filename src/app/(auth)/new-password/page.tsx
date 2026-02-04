@@ -1,13 +1,13 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import axios from "axios";
 
-export default function NewPasswordPage() {
+function NewPasswordForm() {
     const searchParams = useSearchParams();
     const token = searchParams.get("token");
     const router = useRouter();
@@ -43,30 +43,38 @@ export default function NewPasswordPage() {
     };
 
     return (
+        <Card className="w-full max-w-md mx-auto">
+            <CardHeader>
+                <CardTitle className="text-2xl font-bold text-center">Set New Password</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <Input
+                            type="password"
+                            placeholder="New Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
+                    </div>
+                    {message && <p className="text-green-600 text-sm">{message}</p>}
+                    {error && <p className="text-red-500 text-sm">{error}</p>}
+                    <Button type="submit" className="w-full" disabled={loading}>
+                        {loading ? "Resetting..." : "Reset Password"}
+                    </Button>
+                </form>
+            </CardContent>
+        </Card>
+    );
+}
+
+export default function NewPasswordPage() {
+    return (
         <div className="flex items-center justify-center min-h-screen bg-gray-50">
-            <Card className="w-full max-w-md mx-auto">
-                <CardHeader>
-                    <CardTitle className="text-2xl font-bold text-center">Set New Password</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        <div>
-                            <Input
-                                type="password"
-                                placeholder="New Password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                            />
-                        </div>
-                        {message && <p className="text-green-600 text-sm">{message}</p>}
-                        {error && <p className="text-red-500 text-sm">{error}</p>}
-                        <Button type="submit" className="w-full" disabled={loading}>
-                            {loading ? "Resetting..." : "Reset Password"}
-                        </Button>
-                    </form>
-                </CardContent>
-            </Card>
+            <Suspense fallback={<div>Loading...</div>}>
+                <NewPasswordForm />
+            </Suspense>
         </div>
     );
 }

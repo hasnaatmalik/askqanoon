@@ -41,12 +41,12 @@ interface Conversation {
 }
 
 export function ChatInterface({
-    initialQuestion,
-    onBack
+    initialQuestion = "",
+    onBack = () => { }
 }: {
-    initialQuestion: string;
-    onBack: () => void;
-}) {
+    initialQuestion?: string;
+    onBack?: () => void;
+} = {}) {
     const { data: session } = useSession();
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState("");
