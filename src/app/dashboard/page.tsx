@@ -60,6 +60,9 @@ export default async function DashboardPage() {
                         <p className="text-xs text-slate-500">Free Tier</p>
                     </CardContent>
                 </Card>
+
+                {/* Daily Tip Widget */}
+                <DailyTipWidget />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
