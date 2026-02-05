@@ -14,12 +14,9 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-interface NavbarProps {
-    onVideoClick?: () => void;
-    onDepositionClick?: () => void;
-}
+interface NavbarProps { }
 
-export function Navbar({ onVideoClick, onDepositionClick }: NavbarProps) {
+export function Navbar({ }: NavbarProps) {
     const { data: session } = useSession();
 
     return (
@@ -33,35 +30,47 @@ export function Navbar({ onVideoClick, onDepositionClick }: NavbarProps) {
                         Ask<span className="text-secondary-foreground">Qanoon</span>
                     </span>
                 </Link>
-                <div className="hidden items-center gap-6 md:flex">
+                <div className="hidden items-center gap-4 md:flex flex-wrap">
                     {session ? (
                         <>
-                            <Link href="/dashboard" className="text-sm font-medium text-foreground transition-colors hover:text-primary">
+                            <Link href="/dashboard" className="text-sm font-medium text-foreground transition-colors hover:text-primary mr-2">
                                 Dashboard
                             </Link>
-                            <Link href="/chat" className="text-sm font-medium text-foreground transition-colors hover:text-primary">
+                            <Link href="/chat" className="text-sm font-medium text-foreground transition-colors hover:text-primary mr-2">
                                 Ask AI
                             </Link>
                         </>
                     ) : (
                         <>
-                            <Link href="#features" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+                            <Link href="#features" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary mr-2">
                                 How it works
                             </Link>
                         </>
                     )}
-                    <button
-                        onClick={onVideoClick}
+                    <Link
+                        href="/video"
                         className="text-xs font-bold text-primary bg-primary/5 px-3 py-1.5 rounded-lg transition-all hover:bg-primary/10"
                     >
                         Video Forensic
-                    </button>
-                    <button
-                        onClick={onDepositionClick}
+                    </Link>
+                    <Link
+                        href="/deposition"
                         className="text-xs font-bold text-secondary bg-secondary/5 px-3 py-1.5 rounded-lg transition-all hover:bg-secondary/10"
                     >
                         Deposition Prep
-                    </button>
+                    </Link>
+                    <Link
+                        href="/compliance"
+                        className="text-xs font-bold text-emerald-600 bg-emerald-500/10 px-3 py-1.5 rounded-lg transition-all hover:bg-emerald-500/20"
+                    >
+                        Compliance Matrix
+                    </Link>
+                    <Link
+                        href="/negotiation"
+                        className="text-xs font-bold text-indigo-600 bg-indigo-500/10 px-3 py-1.5 rounded-lg transition-all hover:bg-indigo-500/20"
+                    >
+                        Settlement Agent
+                    </Link>
                 </div>
                 <div className="flex items-center gap-4">
                     <DailyTipPopup />
