@@ -3,7 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { MessageSquare, FileText, Scale, ExternalLink, Search, Users, BookOpen } from "lucide-react";
+import { MessageSquare, FileText, Scale, ExternalLink, Search, Users, BookOpen, ShieldCheck, TrendingUp } from "lucide-react";
 
 export default async function DashboardPage() {
     const session = await getServerSession(authOptions);
@@ -145,6 +145,22 @@ export default async function DashboardPage() {
                                 <BookOpen className="h-8 w-8 text-teal-600 mb-3 group-hover:scale-110 transition-transform" />
                                 <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Your Rights</span>
                                 <p className="text-xs text-slate-500 text-center mt-1">Daily legal tips & education</p>
+                            </div>
+                        </Link>
+
+                        <Link href="/compliance" className="group">
+                            <div className="flex flex-col items-center justify-center p-6 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl hover:border-emerald-500/50 hover:bg-emerald-50/50 transition-all cursor-pointer h-full">
+                                <ShieldCheck className="h-8 w-8 text-emerald-600 mb-3 group-hover:scale-110 transition-transform" />
+                                <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Compliance Matrix</span>
+                                <p className="text-xs text-slate-500 text-center mt-1">Multi-jurisdiction checks</p>
+                            </div>
+                        </Link>
+
+                        <Link href="/negotiation" className="group">
+                            <div className="flex flex-col items-center justify-center p-6 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl hover:border-indigo-500/50 hover:bg-indigo-50/50 transition-all cursor-pointer h-full">
+                                <TrendingUp className="h-8 w-8 text-indigo-600 mb-3 group-hover:scale-110 transition-transform" />
+                                <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Settlement Agent</span>
+                                <p className="text-xs text-slate-500 text-center mt-1">AI negotiation strategy</p>
                             </div>
                         </Link>
                     </CardContent>
