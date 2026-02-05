@@ -8,11 +8,11 @@ export default function NegotiationPage() {
             <div className="max-w-6xl mx-auto w-full flex-1 flex flex-col">
                 <div className="mb-8 flex items-center justify-between">
                     <Link
-                        href="/dashboard"
+                        href="/"
                         className="flex items-center text-slate-600 hover:text-slate-900 transition"
                     >
                         <ArrowLeft className="h-5 w-5 mr-2" />
-                        Back to Dashboard
+                        Back to Home
                     </Link>
                     <h1 className="text-xl font-bold font-serif text-slate-800 dark:text-gray-100">
                         AskQanoon <span className="text-slate-500">Negotiate</span>
