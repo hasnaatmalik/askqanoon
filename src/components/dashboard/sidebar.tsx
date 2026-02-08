@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, MessageSquare, History, User, Settings, LogOut, FileText, Scale, Search, Users, BookOpen, Video, Mic } from "lucide-react";
+import { Home, MessageSquare, History, User, Settings, LogOut, FileText, Scale, Search, Users, BookOpen, Video, Mic, Gavel, Calendar, FolderKanban } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -53,6 +53,21 @@ const sidebarItems = [
         title: "Deposition Prep",
         href: "/dashboard/deposition",
         icon: Mic,
+    },
+    {
+        title: "Expert Matcher",
+        href: "/dashboard/expert-matcher",
+        icon: Gavel,
+    },
+    {
+        title: "Filing Tracker",
+        href: "/dashboard/filing-tracker",
+        icon: Calendar,
+    },
+    {
+        title: "Exhibits Manager",
+        href: "/dashboard/exhibit-manager",
+        icon: FolderKanban,
     },
     {
         title: "Chat History",

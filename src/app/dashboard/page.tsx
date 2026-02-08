@@ -3,7 +3,8 @@ import { authOptions } from "@/lib/auth";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { MessageSquare, FileText, Scale, ExternalLink, Search, Users, BookOpen, ShieldCheck, TrendingUp } from "lucide-react";
+import { MessageSquare, FileText, Scale, ExternalLink, Search, Users, BookOpen, ShieldCheck, TrendingUp, Gavel, Calendar, FolderKanban } from "lucide-react";
+import { DailyTipWidget } from "@/components/rights/daily-tip-widget";
 
 export default async function DashboardPage() {
     const session = await getServerSession(authOptions);
@@ -164,6 +165,30 @@ export default async function DashboardPage() {
                                 <TrendingUp className="h-8 w-8 text-indigo-600 mb-3 group-hover:scale-110 transition-transform" />
                                 <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Settlement Agent</span>
                                 <p className="text-xs text-slate-500 text-center mt-1">AI negotiation strategy</p>
+                            </div>
+                        </Link>
+
+                        <Link href="/dashboard/expert-matcher" className="group">
+                            <div className="flex flex-col items-center justify-center p-6 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl hover:border-violet-500/50 hover:bg-violet-50/50 transition-all cursor-pointer h-full">
+                                <Gavel className="h-8 w-8 text-violet-600 mb-3 group-hover:scale-110 transition-transform" />
+                                <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Expert Matcher</span>
+                                <p className="text-xs text-slate-500 text-center mt-1">Find & vet witnesses</p>
+                            </div>
+                        </Link>
+
+                        <Link href="/dashboard/filing-tracker" className="group">
+                            <div className="flex flex-col items-center justify-center p-6 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl hover:border-orange-500/50 hover:bg-orange-50/50 transition-all cursor-pointer h-full">
+                                <Calendar className="h-8 w-8 text-orange-600 mb-3 group-hover:scale-110 transition-transform" />
+                                <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Filing Tracker</span>
+                                <p className="text-xs text-slate-500 text-center mt-1">Manage court deadlines</p>
+                            </div>
+                        </Link>
+
+                        <Link href="/dashboard/exhibit-manager" className="group">
+                            <div className="flex flex-col items-center justify-center p-6 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl hover:border-cyan-500/50 hover:bg-cyan-50/50 transition-all cursor-pointer h-full">
+                                <FolderKanban className="h-8 w-8 text-cyan-600 mb-3 group-hover:scale-110 transition-transform" />
+                                <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Exhibits Manager</span>
+                                <p className="text-xs text-slate-500 text-center mt-1">Sticker & organize evidence</p>
                             </div>
                         </Link>
                     </CardContent>

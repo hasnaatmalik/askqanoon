@@ -29,6 +29,11 @@ AskQanoon is a premium, RAG-powered legal information assistant designed to help
 - **Refusal Logic**: Refuses requests for illegal activities or evasion of law enforcement.
 - **Guardrails**: Displays: “This is legal information, not legal advice.”
 
+### Legal Productivity Tools (New)
+- **Expert Witness Matcher**: AI-powered search to find and vet expert witnesses with credibility scoring and automated voir dire generation.
+- **Court Filing Tracker**: Deadline management system for federal/state courts with automatic local rule violation detection.
+- **Exhibit Management System**: Organize trial evidence with digital stickering, drag-and-drop reordering, and automated index generation.
+
 ## 2️⃣ Technical Stack
 
 - **Frontend**: Next.js + Tailwind CSS + Shadcn UI + Framer Motion.
