@@ -157,15 +157,15 @@ export function SettlementAgent() {
                                         />
                                         <div className="absolute top-6 left-[20%] -translate-x-1/2 text-center">
                                             <div className="text-xs font-bold text-slate-500">LOW</div>
-                                            <div className="font-mono text-sm">${analysis.settlementRange.low.toLocaleString()}</div>
+                                            <div className="font-mono text-sm">${analysis.settlementRange?.low?.toLocaleString() || "N/A"}</div>
                                         </div>
                                         <div className="absolute top-6 left-[50%] -translate-x-1/2 text-center">
                                             <div className="text-xs font-bold text-indigo-600">IDEAL</div>
-                                            <div className="font-mono text-xl font-bold text-indigo-600">${analysis.settlementRange.ideal.toLocaleString()}</div>
+                                            <div className="font-mono text-xl font-bold text-indigo-600">${analysis.settlementRange?.ideal?.toLocaleString() || "N/A"}</div>
                                         </div>
                                         <div className="absolute top-6 left-[80%] -translate-x-1/2 text-center">
                                             <div className="text-xs font-bold text-slate-500">HIGH</div>
-                                            <div className="font-mono text-sm">${analysis.settlementRange.high.toLocaleString()}</div>
+                                            <div className="font-mono text-sm">${analysis.settlementRange?.high?.toLocaleString() || "N/A"}</div>
                                         </div>
                                     </div>
                                     <p className="pt-12 text-sm text-muted-foreground italic text-center max-w-2xl mx-auto">

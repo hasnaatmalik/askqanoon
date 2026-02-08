@@ -60,7 +60,7 @@ export class DepositionService {
 
         try {
             const model = this.genAI.getGenerativeModel({
-                model: "gemini-2.0-flash",
+                model: "gemini-2.5-flash",
             });
 
             const difficultyPrompts = {
@@ -104,13 +104,13 @@ export class DepositionService {
             return result.response.text();
         } catch (error: any) {
             console.error("Deposition Service Error:", error);
-            
+
             // Fallback to mock mode if API fails (e.g., quota exceeded)
             if (error?.status === 429 || error?.message?.includes("quota") || error?.message?.includes("429")) {
                 console.log("[FALLBACK] API quota exceeded, using mock response");
                 return this.getMockResponse(session);
             }
-            
+
             throw error;
         }
     }

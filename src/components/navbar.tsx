@@ -31,13 +31,13 @@ export function Navbar({ }: NavbarProps) {
                     </span>
                 </Link>
                 <div className="hidden items-center gap-4 md:flex flex-wrap">
+                    <Link href="/chat" className="text-sm font-medium text-foreground transition-colors hover:text-primary mr-2">
+                        Ask AI
+                    </Link>
                     {session ? (
                         <>
                             <Link href="/dashboard" className="text-sm font-medium text-foreground transition-colors hover:text-primary mr-2">
                                 Dashboard
-                            </Link>
-                            <Link href="/chat" className="text-sm font-medium text-foreground transition-colors hover:text-primary mr-2">
-                                Ask AI
                             </Link>
                         </>
                     ) : (

@@ -119,7 +119,7 @@ export function JurisdictionMatrix() {
                         </Card>
 
                         <Card className={`border-l-4 ${result.conflictLevel === "High" ? "border-l-red-500" :
-                                result.conflictLevel === "Medium" ? "border-l-yellow-500" : "border-l-emerald-500"
+                            result.conflictLevel === "Medium" ? "border-l-yellow-500" : "border-l-emerald-500"
                             }`}>
                             <CardHeader>
                                 <CardTitle className="text-lg flex justify-between">
@@ -134,12 +134,12 @@ export function JurisdictionMatrix() {
                             </CardHeader>
                             <CardContent>
                                 <ul className="space-y-2">
-                                    {result.conflicts.map((c, i) => (
+                                    {result.conflicts?.map((c, i) => (
                                         <li key={i} className="flex gap-2 text-sm text-muted-foreground">
                                             <AlertTriangle className="h-4 w-4 text-orange-500 flex-shrink-0 mt-0.5" />
                                             {c}
                                         </li>
-                                    ))}
+                                    )) || <li className="text-sm text-muted-foreground">No specific conflicts detected.</li>}
                                 </ul>
                             </CardContent>
                         </Card>
@@ -160,7 +160,7 @@ export function JurisdictionMatrix() {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {result.matrix.map((row, i) => (
+                                        {result.matrix?.map((row, i) => (
                                             <tr key={i} className="border-b last:border-0 hover:bg-muted/50 transition-colors">
                                                 <td className="p-4 font-semibold">{row.jurisdiction}</td>
                                                 <td className="p-4">{row.requirement}</td>
@@ -174,7 +174,7 @@ export function JurisdictionMatrix() {
                                                     </Badge>
                                                 </td>
                                             </tr>
-                                        ))}
+                                        )) || <tr><td colSpan={3} className="p-4 text-center">No data available</td></tr>}
                                     </tbody>
                                 </table>
                             </div>

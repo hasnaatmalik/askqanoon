@@ -9,11 +9,11 @@ export default function ChatPage() {
             <div className="max-w-5xl mx-auto w-full flex-1 flex flex-col">
                 <div className="mb-6 flex items-center justify-between">
                     <Link
-                        href="/dashboard"
+                        href="/"
                         className="flex items-center text-slate-600 hover:text-green-700 transition"
                     >
                         <ArrowLeft className="h-5 w-5 mr-2" />
-                        Back to Dashboard
+                        Back to Home
                     </Link>
                     <h1 className="text-xl font-bold font-serif text-slate-800 dark:text-gray-100">
                         Ask Qanoon <span className="text-green-600">AI</span>

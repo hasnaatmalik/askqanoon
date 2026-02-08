@@ -39,9 +39,9 @@ export class VideoAnalysisService {
 
             console.log(`Video processing complete: ${currentFile.uri}`);
 
-            // 3. Initialize Gemini 3 Pro Preview
+            // 3. Initialize Gemini 2.5 Flash (Free Tier Compatible)
             const model = this.genAI.getGenerativeModel({
-                model: "gemini-3-pro-preview",
+                model: "gemini-2.5-flash",
             });
 
             // 4. Prompting with 'Deep Think' context
