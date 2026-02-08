@@ -43,8 +43,8 @@ async function testComplianceAndSettlement() {
     console.log("3️⃣  Testing Settlement Draft Offer...");
     try {
         const caseFacts = "Employment contract dispute over unpaid bonuses worth $50,000";
-        const offerAmount = "35000";
-        const tone = "Collaborative";
+        const offerAmount = 35000;
+        const tone: "Aggressive" | "Balanced" | "Conciliatory" = "Balanced";
 
         const result = await settlementService.draftOffer(caseFacts, offerAmount, tone);
         console.log("   ✅ Draft Offer Working!");

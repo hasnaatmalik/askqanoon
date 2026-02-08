@@ -30,4 +30,4 @@ async function checkPineconeMetadata() {
     });
 }
 
-check PineconeMetadata().catch(console.error);
+checkPineconeMetadata().catch(console.error);
