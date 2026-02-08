@@ -1,70 +1,88 @@
-# AskQanoon: Understand Pakistani Law. Simply.
+# AskQanoon: Pakistani Law AI Assistant
 
-AskQanoon is a premium, RAG-powered legal information assistant designed to help Pakistani citizens navigate the complexities of local laws using simple language.
+**AskQanoon** is an advanced AI-powered legal assistant designed to make Pakistani laws accessible to everyone. It uses **Retrieval-Augmented Generation (RAG)** to provide accurate, grounded answers from legal texts like the Pakistan Penal Code (PPC), CrPC, and Constitution.
 
-## 1️⃣ Functional Requirements
+## 🚀 Key Features
 
-### User Interaction
-- **Bilingual Support**: Ask questions in English or Roman Urdu.
-- **Chat Interface**: Clean, intuitive chat-based interaction.
-- **Conversational Memory**: Support for follow-up questions within the same session.
-- **User Management**: (Upcoming) Store user profiles and conversation history for personalized experience.
+### 1. Ask AI (RAG Chat)
+- **Accurate Answers**: Retrieves precise legal sections from a Pinecone vector database.
+- **Bilingual Support**: Ask and receive answers in **English** or **Roman Urdu**.
+- **Citations**: Every answer cites the specific law and section number (e.g., *PPC Section 302*).
+- **Voice Mode**: Speak your questions naturally (UI integrated).
 
-### Legal Information Retrieval (RAG Core)
-- **Knowledge Base**: Curated data from PPC, CrPC, Family Laws, and PECA.
-- **Semantic Search**: Uses vector embeddings to find the most relevant law sections.
-- **Context Optimization**: Limits retrieval to top-k relevant chunks (300-500 tokens).
+### 2. Compliance Matrix Agent
+- **Multi-Jurisdiction Analysis**: Compare regulations across Pakistan, EU (GDPR), California (CCPA), and USA Federal.
+- **Conflict Detection**: Automatically identifies conflicting requirements (e.g., Data Retention restrictions).
+- **Visual Matrix**: Easy-to-read table showing compliance status (Compliant, Stricter, Lax).
 
-### Response Generation
-- **Grounded Answers**: Generates responses strictly using retrieved documents.
-- **Simplification**: Translates complex legal jargon into simple, non-legal language.
-- **No Verdicts**: Avoids giving verdicts or guarantees; provides information, not advice.
-- **Disclaimer**: Includes a legal disclaimer in every response.
-
-### Source Transparency
-- **Citations**: Displays law names (e.g., PPC, CrPC) and section numbers.
-- **Transparency**: Clearly indicates if information is not found in the knowledge base.
-
-### Safety & Compliance
-- **Refusal Logic**: Refuses requests for illegal activities or evasion of law enforcement.
-- **Guardrails**: Displays: “This is legal information, not legal advice.”
-
-### Legal Productivity Tools (New)
-- **Expert Witness Matcher**: AI-powered search to find and vet expert witnesses with credibility scoring and automated voir dire generation.
-- **Court Filing Tracker**: Deadline management system for federal/state courts with automatic local rule violation detection.
-- **Exhibit Management System**: Organize trial evidence with digital stickering, drag-and-drop reordering, and automated index generation.
-
-## 2️⃣ Technical Stack
-
-- **Frontend**: Next.js + Tailwind CSS + Shadcn UI + Framer Motion.
-- **Backend/Orchestration**: Next.js API routes integrated with **LangChain**.
-- **Database (ORM)**: **Prisma** with a relational/NoSQL database for user data.
-- **AI Model**: Google Gemini 3 (for reasoning, summarization, and safe generation).
-- **Vector Database**: Pinecone (Free Tier) for storage and retrieval.
-- **Embeddings**: Gemini Text Embedding model.
-- **Deployment**: Vercel.
-
-## 3️⃣ RAG Architecture
-
-AskQanoon utilizes a state-of-the-art RAG (Retrieval-Augmented Generation) flow orchestrated by **LangChain**:
-
-1.  **Ingestion**: Legal docs are chunked (300-500 tokens with 50-token overlap) and stored in Pinecone with metadata (`law_name`, `section_number`, `topic`).
-2.  **Query**: User questions are converted into embeddings.
-3.  **Retrieval**: LangChain fetches relevant chunks from Pinecone.
-4.  **Augmentation**: Context is injected into a strict system prompt.
-5.  **Generation**: Gemini generates a simplified response with citations.
+### 3. Settlement Negotiation AI
+- **Case Analyzer**: Input case facts and opponent history to get a strategic analysis.
+- **Win Probability**: AI estimates the likelihood of success in court.
+- **Settlement Range**: Calculates Low, Ideal, and High settlement figures.
+- **Email Drafter**: Auto-generates settlement offer emails with adjustable tones (Aggressive, Balanced, Conciliatory).
 
 ---
 
-## Getting Started
+## 🛠️ Tech Stack
 
-First, run the development server:
+- **Framework**: Next.js 15 (App Router)
+- **Styling**: Tailwind CSS + Shadcn UI + Framer Motion
+- **AI Model**: **Google Gemini 2.5 Flash** (Free Tier Optimized)
+- **Vector DB**: Pinecone (Serverless)
+- **Embeddings**: `gemini-embedding-001` (3072 Dimensions)
+- **Orchestration**: LangChain.js
 
+---
+
+## ⚡️ Status: Production Ready (with Fallback)
+> **API Quota Protection**: This app is designed to be crash-proof. 
+> The Google Gemini Free Tier has a daily limit. If the limit is reached, the app automatically switches to **Fallback Mode**, providing high-quality demonstration responses instead of failing errors.
+
+---
+
+## 🛠️ Getting Started Locally
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/hasnaatmalik/askqanoon.git
+cd askqanoon
+```
+
+### 2. Install Dependencies
+```bash
+npm install
+```
+
+### 3. Setup Environment Variables
+Create a `.env` file in the root directory:
+```env
+# Gemini API Key (Get from aistudio.google.com)
+GOOGLE_API_KEY=your_gemini_api_key
+
+# Pinecone (Get from app.pinecone.io)
+PINECONE_API_KEY=your_pinecone_api_key
+PINECONE_INDEX=askqanoon
+```
+
+### 4. Run Development Server
 ```bash
 npm run dev
 ```
+Open [http://localhost:3000](http://localhost:3000) to view the app.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-## Disclaimer
-AskQanoon is an experimental AI tool. It provides legal information, not legal advice. Always consult a qualified lawyer.
+## 🌍 Deployment (Vercel)
+
+This project is optimized for [Vercel](https://vercel.com).
+
+1.  Push your code to GitHub.
+2.  Go to **Vercel** -> **New Project**.
+3.  Import the `askqanoon` repository.
+4.  **Important**: Add your `GOOGLE_API_KEY`, `PINECONE_API_KEY`, and `PINECONE_INDEX` in the Vercel **Environment Variables** settings.
+5.  Click **Deploy**.
+
+---
+
+## ⚖️ Disclaimer
+AskQanoon provides legal *information*, not legal *advice*. AI responses can contain errors. Always consult a qualified attorney for professional legal counsel.
