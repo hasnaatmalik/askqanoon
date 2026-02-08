@@ -75,8 +75,7 @@ export function Hero({ onSearch }: { onSearch: (val: string) => void }) {
                                 className="mr-2"
                             />
                             <Button
-                                type="button"
-                                onClick={() => window.location.href = "/register"}
+                                type="submit"
                                 size="lg"
                                 className="h-12 rounded-xl bg-primary px-8 text-primary-foreground transition-all hover:bg-primary/90"
                             >
@@ -93,7 +92,7 @@ export function Hero({ onSearch }: { onSearch: (val: string) => void }) {
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ duration: 0.3, delay: 0.4 + i * 0.1 }}
                                 className="rounded-full border border-border/50 bg-background/50 px-4 py-1.5 text-sm font-medium text-muted-foreground transition-all hover:border-primary/50 hover:bg-primary/5 hover:text-primary"
-                                onClick={() => window.location.href = "/register"}
+                                onClick={() => onSearch(suggestion)}
                             >
                                 {suggestion}
                             </motion.button>
