@@ -137,32 +137,31 @@ export class RAGService {
             };
         };
     }
-}
     async compareRegulations(topic: string, jurisdictions: string[]) {
-    try {
-        const vectorStore = await this.getVectorStore();
-
-        // Since our ingested documents don't have jurisdiction metadata,
-        // we'll retrieve relevant documents globally and analyze them for jurisdiction mentions
-        const retriever = vectorStore.asRetriever({
-            k: 5  // Reduced for faster response times
-        });
-
-        let docs: Document[] = [];
         try {
-            docs = await retriever.invoke(topic);
-        } catch (e) {
-            console.error(`Error fetching documents:`, e);
-            docs = [];
-        }
+            const vectorStore = await this.getVectorStore();
 
-        // Construct context from retrieved documents
-        const context = docs.length > 0
-            ? docs.map((d, i) => `[Doc ${i + 1}] ${d.metadata.law_name || "Law"}: ${d.pageContent}`).join("\n\n")
-            : "No relevant legal documents found.";
+            // Since our ingested documents don't have jurisdiction metadata,
+            // we'll retrieve relevant documents globally and analyze them for jurisdiction mentions
+            const retriever = vectorStore.asRetriever({
+                k: 5  // Reduced for faster response times
+            });
 
-        // Prompt for matrix generation
-        const prompt = PromptTemplate.fromTemplate(`
+            let docs: Document[] = [];
+            try {
+                docs = await retriever.invoke(topic);
+            } catch (e) {
+                console.error(`Error fetching documents:`, e);
+                docs = [];
+            }
+
+            // Construct context from retrieved documents
+            const context = docs.length > 0
+                ? docs.map((d, i) => `[Doc ${i + 1}] ${d.metadata.law_name || "Law"}: ${d.pageContent}`).join("\n\n")
+                : "No relevant legal documents found.";
+
+            // Prompt for matrix generation
+            const prompt = PromptTemplate.fromTemplate(`
                 You are a Legal Compliance Expert.
                 Task: Compare regulations across different jurisdictions for the topic: "{topic}".
                 Requested Jurisdictions: {jurisdictions}
@@ -186,46 +185,46 @@ export class RAGService {
                 }}
             `);
 
-        const chain = RunnableSequence.from([
-            prompt,
-            this.model,
-            new StringOutputParser(),
-        ]);
+            const chain = RunnableSequence.from([
+                prompt,
+                this.model,
+                new StringOutputParser(),
+            ]);
 
-        const result = await chain.invoke({
-            topic,
-            jurisdictions: jurisdictions.join(", "),
-            context
-        });
+            const result = await chain.invoke({
+                topic,
+                jurisdictions: jurisdictions.join(", "),
+                context
+            });
 
-        // Clean markdown code blocks if present
-        const cleanJson = result.replace(/```json/g, "").replace(/```/g, "").trim();
+            // Clean markdown code blocks if present
+            const cleanJson = result.replace(/```json/g, "").replace(/```/g, "").trim();
 
-        return JSON.parse(cleanJson);
+            return JSON.parse(cleanJson);
 
-    } catch (error) {
-        console.error("Comparison Error:", error);
-        // Return fallback data if API fails (e.g. quota exceeded)
-        return {
-            analysis: "Unable to generate real-time analysis due to high demand. Showing example comparison for demonstration.",
-            conflictLevel: "Medium",
-            matrix: jurisdictions.map(j => ({
-                jurisdiction: j,
-                requirement: "Data retention period varies by local laws (Example: 1-5 years)",
-                status: j === "EU" ? "Stricter" : "Compliant"
-            })),
-            conflicts: [
-                "Different retention periods across jurisdictions",
-                "Varying data localization requirements"
-            ]
-        };
+        } catch (error) {
+            console.error("Comparison Error:", error);
+            // Return fallback data if API fails (e.g. quota exceeded)
+            return {
+                analysis: "Unable to generate real-time analysis due to high demand. Showing example comparison for demonstration.",
+                conflictLevel: "Medium",
+                matrix: jurisdictions.map(j => ({
+                    jurisdiction: j,
+                    requirement: "Data retention period varies by local laws (Example: 1-5 years)",
+                    status: j === "EU" ? "Stricter" : "Compliant"
+                })),
+                conflicts: [
+                    "Different retention periods across jurisdictions",
+                    "Varying data localization requirements"
+                ]
+            };
+        }
     }
-}
 
     async ingestDocs(docs: { content: string; metadata: any }[]) {
-    const vectorStore = await this.getVectorStore();
-    console.log(`Ingesting ${docs.length} documents...`);
-}
+        const vectorStore = await this.getVectorStore();
+        console.log(`Ingesting ${docs.length} documents...`);
+    }
 }
 
 export const ragService = new RAGService();
