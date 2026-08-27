@@ -74,12 +74,12 @@ export function Features() {
                     {features.map((feature, i) => (
                         <motion.div
                             key={feature.title}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
+                            initial={{ opacity: 0, transform: "translateY(8px)" }}
+                            whileInView={{ opacity: 1, transform: "translateY(0)" }}
                             viewport={{ once: true }}
-                            transition={{ duration: 0.5, delay: i * 0.1 }}
+                            transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1], delay: i * 0.04 }}
                         >
-                            <Card className="h-full border-border/50 bg-background/50 backdrop-blur-sm transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5">
+                            <Card className="h-full border-border/50 bg-background/50 backdrop-blur-sm transition-[border-color,box-shadow] duration-200 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5">
                                 <CardHeader>
                                     <div className={`mb-2 flex h-10 w-10 items-center justify-center rounded-lg ${feature.bg} ${feature.color}`}>
                                         <feature.icon className="h-5 w-5" />

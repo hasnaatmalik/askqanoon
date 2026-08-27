@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Scale, User } from "lucide-react";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { Scale, User, ChevronDown, Sparkles } from "lucide-react";
+import { useSession, signOut } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ModeToggle } from "@/components/mode-toggle";
 import { DailyTipPopup } from "@/components/notifications/daily-tip-popup";
@@ -14,9 +14,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-interface NavbarProps { }
-
-export function Navbar({ }: NavbarProps) {
+export function Navbar() {
     const { data: session } = useSession();
 
     return (
@@ -30,47 +28,25 @@ export function Navbar({ }: NavbarProps) {
                         Ask<span className="text-secondary-foreground">Qanoon</span>
                     </span>
                 </Link>
-                <div className="hidden items-center gap-4 md:flex flex-wrap">
-                    <Link href="/chat" className="text-sm font-medium text-foreground transition-colors hover:text-primary mr-2">
+                <div className="hidden items-center gap-1 md:flex">
+                    <Link href="/chat" className="rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-accent hover:text-primary">
                         Ask AI
                     </Link>
-                    {session ? (
-                        <>
-                            <Link href="/dashboard" className="text-sm font-medium text-foreground transition-colors hover:text-primary mr-2">
-                                Dashboard
-                            </Link>
-                        </>
-                    ) : (
-                        <>
-                            <Link href="#features" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary mr-2">
-                                How it works
-                            </Link>
-                        </>
-                    )}
-                    <Link
-                        href="/video"
-                        className="text-xs font-bold text-primary bg-primary/5 px-3 py-1.5 rounded-lg transition-all hover:bg-primary/10"
-                    >
-                        Video Forensic
+                    <Link href={session ? "/dashboard" : "/#features"} className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-primary">
+                        {session ? "Dashboard" : "How it works"}
                     </Link>
-                    <Link
-                        href="/deposition"
-                        className="text-xs font-bold text-secondary bg-secondary/5 px-3 py-1.5 rounded-lg transition-all hover:bg-secondary/10"
-                    >
-                        Deposition Prep
-                    </Link>
-                    <Link
-                        href="/compliance"
-                        className="text-xs font-bold text-emerald-600 bg-emerald-500/10 px-3 py-1.5 rounded-lg transition-all hover:bg-emerald-500/20"
-                    >
-                        Compliance Matrix
-                    </Link>
-                    <Link
-                        href="/negotiation"
-                        className="text-xs font-bold text-indigo-600 bg-indigo-500/10 px-3 py-1.5 rounded-lg transition-all hover:bg-indigo-500/20"
-                    >
-                        Settlement Agent
-                    </Link>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-primary">
+                                Tools <ChevronDown className="h-3.5 w-3.5" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="center" className="w-48">
+                            <DropdownMenuItem asChild><Link href="/deposition">Deposition prep</Link></DropdownMenuItem>
+                            <DropdownMenuItem asChild><Link href="/compliance">Compliance matrix</Link></DropdownMenuItem>
+                            <DropdownMenuItem asChild><Link href="/negotiation">Settlement assistant</Link></DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
                 <div className="flex items-center gap-4">
                     <DailyTipPopup />
@@ -133,10 +109,10 @@ export function Navbar({ }: NavbarProps) {
                                 <Link href="/login">Login</Link>
                             </Button>
                             <Button
-                                className="bg-primary text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:scale-105 hover:bg-primary/90 active:scale-95"
+                                className="bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary/90"
                                 asChild
                             >
-                                <Link href="/register">Get Started</Link>
+                                <Link href="/register"><Sparkles className="h-4 w-4" />Get Started</Link>
                             </Button>
                         </>
                     )}

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, MessageSquare, History, User, Settings, LogOut, FileText, Scale, Search, Users, BookOpen, Video, Mic, Gavel, Calendar, FolderKanban } from "lucide-react";
+import { Home, MessageSquare, User, Settings, LogOut, FileText, Scale, Search, Users, BookOpen, Mic, Gavel, Calendar, FolderKanban } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -44,11 +44,7 @@ const sidebarItems = [
         href: "/dashboard/rights",
         icon: BookOpen,
     },
-    {
-        title: "Video Forensic",
-        href: "/dashboard/video-forensic",
-        icon: Video,
-    },
+
     {
         title: "Deposition Prep",
         href: "/dashboard/deposition",
@@ -70,11 +66,6 @@ const sidebarItems = [
         icon: FolderKanban,
     },
     {
-        title: "Chat History",
-        href: "/dashboard/history",
-        icon: History,
-    },
-    {
         title: "Profile",
         href: "/dashboard/profile",
         icon: User,
@@ -90,20 +81,22 @@ export function Sidebar() {
     const pathname = usePathname();
 
     return (
-        <div className="flex flex-col h-full bg-slate-900 text-white w-64 shadow-xl border-r border-slate-800">
+        <aside className="hidden h-full w-64 shrink-0 flex-col border-r border-slate-800 bg-slate-950 text-white lg:flex">
             <div className="p-6 border-b border-slate-800">
                 <Link href="/" className="flex items-center gap-2 font-serif text-2xl">
                     <span className="text-green-500">Ask</span>Qanoon
                 </Link>
             </div>
 
-            <div className="flex-1 py-6 flex flex-col gap-1 px-3">
+            <nav className="flex-1 overflow-y-auto px-3 py-5">
+                <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">Workspace</p>
+                <div className="flex flex-col gap-1">
                 {sidebarItems.map((item) => (
                     <Link
                         key={item.href}
                         href={item.href}
                         className={cn(
-                            "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 text-sm font-medium",
+                            "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium",
                             pathname === item.href
                                 ? "bg-green-600/20 text-green-400 border border-green-600/30 shadow-sm"
                                 : "hover:bg-slate-800 text-slate-400 hover:text-white"
@@ -113,7 +106,8 @@ export function Sidebar() {
                         {item.title}
                     </Link>
                 ))}
-            </div>
+                </div>
+            </nav>
 
             <div className="p-4 border-t border-slate-800 space-y-2">
                 <div className="flex justify-between items-center px-2">
@@ -129,6 +123,6 @@ export function Sidebar() {
                     Sign Out
                 </Button>
             </div>
-        </div>
+        </aside>
     );
 }

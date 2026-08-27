@@ -3,6 +3,30 @@ import { GoogleAIFileManager, FileState } from "@google/generative-ai/server";
 import fs from "fs";
 import path from "path";
 
+// Supported MIME types for Google Files API
+const MIME_TYPE_MAP: Record<string, string> = {
+    ".mp4":  "video/mp4",
+    ".mpeg": "video/mpeg",
+    ".mpg":  "video/mpeg",
+    ".mov":  "video/quicktime",
+    ".avi":  "video/x-msvideo",
+    ".wmv":  "video/x-ms-wmv",
+    ".webm": "video/webm",
+    ".mkv":  "video/x-matroska",
+    ".3gp":  "video/3gpp",
+    ".flv":  "video/x-flv",
+};
+
+function getVideoMimeType(fileName: string): string {
+    const ext = path.extname(fileName).toLowerCase();
+    const mimeType = MIME_TYPE_MAP[ext];
+    if (!mimeType) {
+        console.warn(`Unknown file extension "${ext}", defaulting to video/mp4`);
+        return "video/mp4";
+    }
+    return mimeType;
+}
+
 export class VideoAnalysisService {
     private genAI: GoogleGenerativeAI;
     private fileManager: GoogleAIFileManager;
@@ -15,10 +39,13 @@ export class VideoAnalysisService {
 
     async analyzeVideo(videoPath: string, fileName: string) {
         try {
+            // FIX: Detect mimeType dynamically from the actual file extension
+            const mimeType = getVideoMimeType(fileName);
+
             // 1. Upload Video
-            console.log(`Uploading video: ${videoPath}...`);
+            console.log(`Uploading video: ${videoPath} (${mimeType})...`);
             const uploadResponse = await this.fileManager.uploadFile(videoPath, {
-                mimeType: "video/mp4",
+                mimeType,
                 displayName: fileName,
             });
 
@@ -27,34 +54,52 @@ export class VideoAnalysisService {
 
             // 2. Wait for processing
             let currentFile = await this.fileManager.getFile(file.name);
-            while (currentFile.state === FileState.PROCESSING) {
-                console.log("Processing video...");
+            let attempts = 0;
+            const maxAttempts = 60; // Max 5 minutes wait
+
+            while (currentFile.state === FileState.PROCESSING && attempts < maxAttempts) {
+                console.log(`Processing video... (attempt ${attempts + 1}/${maxAttempts})`);
                 await new Promise((resolve) => setTimeout(resolve, 5000));
                 currentFile = await this.fileManager.getFile(file.name);
+                attempts++;
             }
 
             if (currentFile.state === FileState.FAILED) {
-                throw new Error("Video processing failed.");
+                throw new Error("Video processing failed on Google's servers. The file may be corrupted or an unsupported format.");
+            }
+
+            if (currentFile.state === FileState.PROCESSING) {
+                throw new Error("Video processing timed out. Please try with a shorter video.");
             }
 
             console.log(`Video processing complete: ${currentFile.uri}`);
 
-            // 3. Initialize Gemini 2.5 Flash (Free Tier Compatible)
+            // 3. Initialize Gemini 2.5 Flash
             const model = this.genAI.getGenerativeModel({
-                model: "gemini-2.5-flash",
+                model: "gemini-3.6-flash",
             });
 
-            // 4. Prompting with 'Deep Think' context
+            // 4. Legal forensic analysis prompt
             const prompt = `
             Analyze this video for forensic legal evidence in the context of Pakistani law. 
             
-            1. Identify the specific user interactions and actions shown on screen.
-            2. FORENSIC REASONING (DEEP THINK): Perform a step-by-step reasoning analysis. 
+            1. **Overview**: Briefly describe what is happening in the video.
+            2. **Key Events & Timeline**: List key events with approximate timestamps.
+            3. **FORENSIC REASONING**: Perform a step-by-step reasoning analysis. 
                - What is the cause and effect of the actions observed?
                - Are there any signs of coercion, hesitation, or specific intent?
-               - Why did the individuals act the way they did at key timestamps?
-            3. Legal Implications: Briefly mention which areas of Pakistani Law (e.g., PPC, CrPC) might be relevant based on the actions (Disclaimer: This is for informational purposes).
-            4. Output the technical data (timestamps, objects, actions) in a structured JSON block at the end.
+               - Are there any actions that appear legally significant?
+            4. **Legal Implications**: Briefly mention which areas of Pakistani Law (e.g., PPC, CrPC, PECA) might be relevant based on the actions observed. 
+               *Disclaimer: This is for informational/educational purposes only and does not constitute legal advice.*
+            5. **Structured Data**: Output a JSON block at the very end with this format:
+               \`\`\`json
+               {
+                 "summary": "...",
+                 "keyEvents": [{ "timestamp": "...", "event": "..." }],
+                 "relevantLaws": ["..."],
+                 "riskLevel": "Low | Medium | High"
+               }
+               \`\`\`
             `;
 
             const result = await model.generateContent([
@@ -69,7 +114,7 @@ export class VideoAnalysisService {
 
             const responseText = result.response.text();
 
-            // Clean up the local file after upload
+            // Clean up the local temp file after successful upload
             try {
                 fs.unlinkSync(videoPath);
             } catch (err) {
@@ -79,6 +124,10 @@ export class VideoAnalysisService {
             return responseText;
         } catch (error) {
             console.error("Video Analysis Error:", error);
+            // Clean up temp file even on error
+            try {
+                if (fs.existsSync(videoPath)) fs.unlinkSync(videoPath);
+            } catch (_) {}
             throw error;
         }
     }

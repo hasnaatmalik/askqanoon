@@ -34,9 +34,17 @@
 
 ---
 
-## ⚡️ Status: Production Ready (with Fallback)
-> **API Quota Protection**: This app is designed to be crash-proof. 
-> The Google Gemini Free Tier has a daily limit. If the limit is reached, the app automatically switches to **Fallback Mode**, providing high-quality demonstration responses instead of failing errors.
+## Answer quality and safety
+
+The chat path is intentionally grounded:
+
+- The API validates question size and preserves only the last six valid chat turns.
+- Retrieval is performed from Pinecone before generation. The model is told to treat retrieved text as data, not instructions.
+- Every legal claim must cite its retrieved source tag (`[S1]`, `[S2]`); the matching source cards are shown below the response.
+- When the database cannot support an answer, AskQanoon says so instead of creating a demonstration answer.
+- Roman Urdu mode requires Latin-script Urdu output; the legal source names and section numbers remain unchanged.
+
+For production, monitor answer/source agreement and add a retrieval-evaluation dataset before expanding the corpus. The current stack (Next.js API route + Gemini + Pinecone) is a suitable architecture for this product; improve ingestion metadata and evaluation before replacing it.
 
 ---
 
@@ -58,6 +66,7 @@ Create a `.env` file in the root directory:
 ```env
 # Gemini API Key (Get from aistudio.google.com)
 GOOGLE_API_KEY=your_gemini_api_key
+GEMINI_MODEL=gemini-2.5-flash
 
 # Pinecone (Get from app.pinecone.io)
 PINECONE_API_KEY=your_pinecone_api_key

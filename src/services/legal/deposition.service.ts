@@ -8,31 +8,26 @@ export interface DepositionSession {
     caseFacts: string;
 }
 
-// Enable mock mode for testing (set to true to bypass API calls)
 const USE_MOCK_MODE = process.env.DEPOSITION_MOCK_MODE === "true";
 
-// Mock responses for testing UI without API
 const mockResponses: Record<Difficulty, string[]> = {
     gentle: [
         "Good morning. Thank you for being here today. Let's start with some basic questions. Could you please state your full name and your relationship to this case?\n\n[COACH NOTE] Remember to speak clearly and take your time. It's okay to ask for clarification if you don't understand a question.",
-        "Thank you for that. Now, can you tell me when you first became aware of the property boundary dispute?\n\n[COACH NOTE] Good job staying calm. When answering about dates, it's perfectly fine to say 'approximately' if you're not 100% certain.",
-        "I appreciate your clarity. You mentioned the survey report - do you recall who conducted that survey and were you present at the time?\n\n[COACH NOTE] You're doing well. Remember, if you don't remember something, it's better to say 'I don't recall' than to guess.",
-        "That's helpful context. Can you describe the disputed wall - its location, height, and materials?\n\n[COACH NOTE] Excellent composure. Keep your answers focused on what you personally observed, not what others told you."
+        "Thank you for that. Now, can you tell me when you first became aware of this situation?\n\n[COACH NOTE] When answering about dates, it's fine to say 'approximately' if you're not 100% certain.",
+        "You mentioned that earlier — can you describe in your own words exactly what you observed?\n\n[COACH NOTE] Stick to what you personally witnessed. Don't speculate or include hearsay.",
     ],
     standard: [
         "Good morning. Please state your full name for the record and describe your involvement in this matter.",
-        "Let's get to the specifics. When exactly did you first notice the alleged encroachment, and what prompted you to have a survey conducted?",
-        "⚖️ [CONSISTENCY ALERT] You stated the survey was conducted in January 2024, but the wall was allegedly built in 2015. Why did it take nearly 9 years to conduct a formal survey?",
-        "I'd like to understand the timeline better. You purchased the property in 2018 - did the seller disclose any boundary disputes? Do you have documentation of what was represented to you at the time of purchase?",
-        "The survey report mentions concrete pillars as boundary markers. Were these pillars present when you purchased the property, or were they installed after the survey?"
+        "Let's get to specifics. Walk me through the sequence of events as you remember them, starting from the beginning.",
+        "⚖️ [CONSISTENCY ALERT] Your account raises a question about the timeline. Earlier you said X — can you clarify?",
+        "I'd like to understand the timeline better. What exactly prompted you to take action at that point?",
     ],
     aggressive: [
-        "State your name. Let's not waste time - you're claiming your neighbor's wall encroaches on YOUR property, correct? But isn't it true that you only raised this issue AFTER a personal dispute with Mr. Bashir Ali?",
-        "⚖️ [CONSISTENCY ALERT] WAIT. You say you bought this property in 2018 for 50 lakhs. The wall was built in 2015 - THREE YEARS before you even owned the property. So you purchased land KNOWING there was a wall there, and NOW you claim it's an encroachment? Explain that!",
-        "You're telling this court you waited SIX YEARS after purchase to conduct a survey? SIX YEARS? If this encroachment was so obvious, why didn't you survey BEFORE buying? Isn't the real truth that you're manufacturing this dispute?",
-        "Let me be very clear. You have NO witnesses, NO photographs from 2015, and NO independent verification. Your entire case rests on a survey done in 2024 - nearly a DECADE after the wall was built. How convenient! Isn't this just a land grab attempt?",
-        "⚖️ [CONSISTENCY ALERT] Earlier you said the boundary was 'clearly marked' - but if it was SO clear, why did your neighbor build a wall there? Either the markers weren't clear, or you're not telling us the whole truth. Which is it?"
-    ]
+        "State your name. Let's not waste time — you're claiming your neighbor's wall encroaches on YOUR property, correct? But isn't it true that you only raised this issue AFTER a personal dispute?",
+        "⚖️ [CONSISTENCY ALERT] WAIT. You say you bought this property in 2018. The wall was built in 2015 — THREE YEARS before you even owned the property. So you purchased land KNOWING there was a wall there, and NOW you claim it's an encroachment? Explain that!",
+        "You're telling this court you waited SIX YEARS to conduct a survey? If this encroachment was so obvious, why didn't you survey BEFORE buying? Isn't the real truth that you're manufacturing this dispute?",
+        "⚖️ [CONSISTENCY ALERT] Earlier you said the boundary was 'clearly marked' — but if it was SO clear, why did your neighbor build a wall there? Either the markers weren't clear, or you're not telling us the whole truth. Which is it?",
+    ],
 };
 
 export class DepositionService {
@@ -45,72 +40,88 @@ export class DepositionService {
 
     private getMockResponse(session: DepositionSession): string {
         const responses = mockResponses[session.difficulty];
-        const questionIndex = Math.floor(session.messages.length / 2); // Every 2 messages = 1 Q&A cycle
+        const questionIndex = Math.floor(session.messages.length / 2);
         return responses[questionIndex % responses.length];
     }
 
     async generateNextQuestion(session: DepositionSession) {
-        // Use mock mode for testing
         if (USE_MOCK_MODE) {
-            console.log("[MOCK MODE] Returning simulated deposition response");
-            // Simulate API delay
             await new Promise(resolve => setTimeout(resolve, 500));
             return this.getMockResponse(session);
         }
 
         try {
-            const model = this.genAI.getGenerativeModel({
-                model: "gemini-2.5-flash",
-            });
+            const model = this.genAI.getGenerativeModel({ model: "gemini-3.6-flash" });
 
-            const difficultyPrompts = {
-                gentle: "You are a supportive legal preparer. Your goal is to help the witness become comfortable. Ask clear, non-threatening questions and give 'Coach Notes' after their answer to help them improve.",
-                standard: "You are a standard opposing counsel during a deposition. Be professional, firm, and thorough. Follow up on inconsistencies.",
-                aggressive: "STRESS TEST MODE: You are a hostile opposing counsel. Use aggressive questioning tactics, look for any small contradiction, and put pressure on the witness's credibility. Be skeptical and relentless."
+            const isFirstQuestion = session.messages.length === 0;
+
+            const difficultySystem = {
+                gentle: `You are a supportive legal coach preparing a witness for deposition.
+ROLE: Your tone is calm, encouraging, and constructive.
+RULES:
+- Ask ONE clear, open-ended question at a time — never multiple questions in one turn.
+- After the witness responds, provide a [COACH NOTE] block with actionable feedback (e.g., "Good — you stayed factual. Next time, avoid volunteering extra details.").
+- Cover key areas methodically: identity, timeline, observations, documents, relationship to parties.
+- If the witness's answer contradicts the Case Context, gently probe — but do NOT attack.
+- Keep the simulation realistic but safe.`,
+
+                standard: `You are a professional opposing counsel conducting a formal deposition under Pakistani civil procedure rules.
+ROLE: Professional, methodical, and thorough.
+RULES:
+- Ask ONE focused question per turn. Be precise.
+- Probe for inconsistencies between the witness's testimony and the Case Context — but do so calmly and professionally.
+- If you detect a contradiction with the Case Context, prefix your question with: ⚖️ [CONSISTENCY ALERT]
+- Explore: facts, timeline, intent, documents, credibility, prior knowledge.
+- Do not telegraph your legal strategy — build pressure gradually.
+- Stay strictly in character as a lawyer. No coaching.`,
+
+                aggressive: `You are a hostile, high-pressure opposing counsel using aggressive cross-examination tactics.
+ROLE: Relentless, skeptical, and confrontational — but legally precise.
+RULES:
+- Ask ONE devastating question per turn. Make it count.
+- ALWAYS check the witness's answer against the Case Context for contradictions. If found, open with: ⚖️ [CONSISTENCY ALERT] — then expose the contradiction forcefully.
+- Use rhetorical pressure, repetition of damaging facts, and pointed "isn't it true that..." constructions.
+- Attack credibility, motive, timeline gaps, and missing evidence.
+- Use "Deep Think" chain-of-reasoning: before asking, internally reason — "What is the weakest point in this witness's testimony right now? What's the single most damaging question I can ask?" — then ask THAT question.
+- Stay 100% in character. You are here to win.`,
             };
 
-            const prompt = `
-            You are an AI Deposition Simulator for Pakistani legal cases. 
-            
-            CASE CONTEXT/GROUND TRUTH:
-            ${session.caseFacts}
+            const systemPrompt = `
+=== DEPOSITION AI SIMULATOR — SYSTEM CONTEXT ===
 
-            CURRENT DIFFICULTY: ${difficultyPrompts[session.difficulty]}
+${difficultySystem[session.difficulty]}
 
-            TASK:
-            1. Analyze the witness's previous answers for CONSISTENCY against the provided Case Context.
-            2. If you find a contradiction, point it out immediately in character as a hostile or firm examiner.
-            3. If the difficulty is "gentle", provide a [COACH NOTE] block after your question with advice.
-            4. If the difficulty is "aggressive", use "Deep Think" reasoning to trap the witness in their own contradictions.
-            
-            OUTPUT FORMAT:
-            - Your answer should be in character as the examiner.
-            - If there is a coach note, put it at the end starting with [COACH NOTE].
-            - If there is a consistency warning, put it at the start with ⚖️ [CONSISTENCY ALERT].
-            `;
+=== CASE CONTEXT (GROUND TRUTH — DO NOT SHARE WITH WITNESS) ===
+${session.caseFacts}
+
+=== CRITICAL RULES ===
+1. You are the EXAMINER. The user is the WITNESS. Never break character.
+2. Ask exactly ONE question per response (unless it's a [CONSISTENCY ALERT] which may have a brief statement + question).
+3. ${isFirstQuestion ? "This is the OPENING of the deposition. Begin with a formal opening statement (1 sentence) then ask the witness to state their name and describe their role in the matter." : "Continue the deposition based on the conversation history. Build on what the witness has said."}
+4. Output FORMAT:
+   - If aggressive/standard with inconsistency: Start with ⚖️ [CONSISTENCY ALERT] <brief statement of the contradiction>
+   - If gentle: End with [COACH NOTE] <actionable coaching feedback>
+   - Otherwise: Just ask your question naturally.
+5. Keep your output concise and impactful. Do NOT pad with unnecessary pleasantries.
+`;
 
             const contents = [
-                { role: "user", parts: [{ text: prompt }] },
+                { role: "user", parts: [{ text: systemPrompt }] },
                 ...session.messages.map(m => ({
                     role: m.role === "assistant" ? "model" as const : "user" as const,
-                    parts: [{ text: m.content }]
-                }))
+                    parts: [{ text: m.content }],
+                })),
+                // Add a model "ack" if first turn
+                ...(isFirstQuestion ? [] : []),
             ];
 
-            const result = await model.generateContent({
-                contents
-            });
-
+            const result = await model.generateContent({ contents });
             return result.response.text();
         } catch (error: any) {
             console.error("Deposition Service Error:", error);
-
-            // Fallback to mock mode if API fails (e.g., quota exceeded)
             if (error?.status === 429 || error?.message?.includes("quota") || error?.message?.includes("429")) {
-                console.log("[FALLBACK] API quota exceeded, using mock response");
                 return this.getMockResponse(session);
             }
-
             throw error;
         }
     }
