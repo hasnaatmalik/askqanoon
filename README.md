@@ -90,7 +90,7 @@ This project is optimized for [Vercel](https://vercel.com).
 2.  Go to **Vercel** -> **New Project**.
 3.  Import the `askqanoon` repository.
 4.  **Important**: Add all API keys from your `.env` to the Vercel **Environment Variables** settings.
-5.  Click **Deploy**.
+5.  Click **Deploy!**.
 
 ---
 
