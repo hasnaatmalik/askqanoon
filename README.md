@@ -1,50 +1,47 @@
 # AskQanoon: Pakistani Law AI Assistant
 
-**AskQanoon** is an advanced AI-powered legal assistant designed to make Pakistani laws accessible to everyone. It uses **Retrieval-Augmented Generation (RAG)** to provide accurate, grounded answers from legal texts like the Pakistan Penal Code (PPC), CrPC, and Constitution.
+**AskQanoon** is an advanced AI-powered legal assistant designed to make Pakistani laws accessible to everyone. Featuring a beautiful, distraction-free "Warm Paper" design language, it uses **Retrieval-Augmented Generation (RAG)** with **HyDE (Hypothetical Document Embeddings)** to provide accurate, grounded answers from legal texts like the Pakistan Penal Code (PPC), CrPC, and Constitution.
 
 ## 🚀 Key Features
 
-### 1. Ask AI (RAG Chat)
-- **Accurate Answers**: Retrieves precise legal sections from a Pinecone vector database.
-- **Bilingual Support**: Ask and receive answers in **English** or **Roman Urdu**.
-- **Citations**: Every answer cites the specific law and section number (e.g., *PPC Section 302*).
-- **Voice Mode**: Speak your questions naturally (UI integrated).
+### 1. Minimalist "Warm Paper" Interface
+- **Distraction-Free**: A highly polished, flat aesthetic designed to look and feel like warm legal paper, prioritizing readability.
+- **Floating Input**: A premium, responsive chat interface that elegantly handles both English and Roman Urdu.
 
-### 2. Compliance Matrix Agent
-- **Multi-Jurisdiction Analysis**: Compare regulations across Pakistan, EU (GDPR), California (CCPA), and USA Federal.
-- **Conflict Detection**: Automatically identifies conflicting requirements (e.g., Data Retention restrictions).
-- **Visual Matrix**: Easy-to-read table showing compliance status (Compliant, Stricter, Lax).
+### 2. Ask AI (RAG Chat)
+- **Accurate Answers**: Retrieves precise legal sections from a Pinecone vector database using advanced HyDE techniques.
+- **Citations**: Every answer cites the specific law and section number via beautiful, dedicated statute cards.
+- **Graceful Degradation**: Chat works even if the vector database is unavailable, cleanly communicating to the user when citations are missing.
 
 ### 3. Settlement Negotiation AI
 - **Case Analyzer**: Input case facts and opponent history to get a strategic analysis.
-- **Win Probability**: AI estimates the likelihood of success in court.
+- **Win Probability**: AI estimates the likelihood of success in court via visual progress bars.
 - **Settlement Range**: Calculates Low, Ideal, and High settlement figures.
 - **Email Drafter**: Auto-generates settlement offer emails with adjustable tones (Aggressive, Balanced, Conciliatory).
+
+### 4. Compliance Matrix Agent
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Framework**: Next.js 15 (App Router)
-- **Styling**: Tailwind CSS + Shadcn UI + Framer Motion
-- **AI Model**: **Google Gemini 2.5 Flash** (Free Tier Optimized)
+- **Framework**: Next.js 16 (App Router)
+- **Styling**: Tailwind CSS v4
+- **Chat Model**: **Groq (Llama 3.3 70B or GPT-OSS)** for ultra-fast, high-quality reasoning.
 - **Vector DB**: Pinecone (Serverless)
-- **Embeddings**: `gemini-embedding-001` (3072 Dimensions)
-- **Orchestration**: LangChain.js
+- **Embeddings**: `gemini-embedding-001` (3072 Dimensions via Google AI)
 
 ---
 
-## Answer quality and safety
+## 🛡️ Answer Quality and Safety
 
 The chat path is intentionally grounded:
 
 - The API validates question size and preserves only the last six valid chat turns.
-- Retrieval is performed from Pinecone before generation. The model is told to treat retrieved text as data, not instructions.
+- **HyDE Retrieval**: Before searching Pinecone, the AI generates a hypothetical "ideal answer" and embeds *that* to find highly relevant legal chunks.
 - Every legal claim must cite its retrieved source tag (`[S1]`, `[S2]`); the matching source cards are shown below the response.
-- When the database cannot support an answer, AskQanoon says so instead of creating a demonstration answer.
+- When the database cannot support an answer, AskQanoon explicitly says so instead of hallucinating a demonstration answer.
 - Roman Urdu mode requires Latin-script Urdu output; the legal source names and section numbers remain unchanged.
-
-For production, monitor answer/source agreement and add a retrieval-evaluation dataset before expanding the corpus. The current stack (Next.js API route + Gemini + Pinecone) is a suitable architecture for this product; improve ingestion metadata and evaluation before replacing it.
 
 ---
 
@@ -64,11 +61,15 @@ npm install
 ### 3. Setup Environment Variables
 Create a `.env` file in the root directory:
 ```env
-# Gemini API Key (Get from aistudio.google.com)
-GOOGLE_API_KEY=your_gemini_api_key
-GEMINI_MODEL=gemini-2.5-flash
+# Groq API (Required for LLM chat — fast, free at console.groq.com)
+GROQ_API_KEY=your_groq_api_key_here
+GROQ_MODEL=openai/gpt-oss-120b
 
-# Pinecone (Get from app.pinecone.io)
+# Google Gemini API (Required for EMBEDDINGS ONLY — vector retrieval from Pinecone)
+# Get from aistudio.google.com - must start with AQ. or AIza
+GOOGLE_API_KEY=your_google_api_key
+
+# Pinecone (Required for RAG)
 PINECONE_API_KEY=your_pinecone_api_key
 PINECONE_INDEX=askqanoon
 ```
@@ -88,7 +89,7 @@ This project is optimized for [Vercel](https://vercel.com).
 1.  Push your code to GitHub.
 2.  Go to **Vercel** -> **New Project**.
 3.  Import the `askqanoon` repository.
-4.  **Important**: Add your `GOOGLE_API_KEY`, `PINECONE_API_KEY`, and `PINECONE_INDEX` in the Vercel **Environment Variables** settings.
+4.  **Important**: Add all API keys from your `.env` to the Vercel **Environment Variables** settings.
 5.  Click **Deploy**.
 
 ---

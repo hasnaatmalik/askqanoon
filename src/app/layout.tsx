@@ -1,18 +1,24 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Playfair_Display, Inter } from "next/font/google";
+import { Outfit, Public_Sans } from "next/font/google";
 import "./globals.css";
+import { Providers } from "@/components/providers";
 
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
-const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
-const playfairDisplay = Playfair_Display({ variable: "--font-playfair-display", subsets: ["latin"] });
-const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
+const outfit = Outfit({
+  subsets: ["latin"],
+  variable: "--font-outfit",
+  display: "swap",
+});
+
+const publicSans = Public_Sans({
+  subsets: ["latin"],
+  variable: "--font-public-sans",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "AskQanoon - Pakistani Law AI",
   description: "Your AI-powered legal assistant for Pakistani laws, regulations, and compliance.",
 };
-
-import { Providers } from "@/components/providers";
 
 export default function RootLayout({
   children,
@@ -21,8 +27,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} ${inter.variable} font-sans antialiased`}>
-        <Providers>{children}</Providers>
+      <body className={`${outfit.variable} ${publicSans.variable} font-sans antialiased min-h-screen flex flex-col`}>
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );
