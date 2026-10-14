@@ -52,7 +52,9 @@ export default function RegisterForm() {
                     <div>
                         <Input
                             type="text"
-                            placeholder="Full Name"
+                            aria-label="Full name"
+                            autoComplete="name"
+                            placeholder="Full name"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             required
@@ -61,6 +63,8 @@ export default function RegisterForm() {
                     <div>
                         <Input
                             type="email"
+                            autoComplete="email"
+                            aria-label="Email"
                             placeholder="Email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -70,22 +74,24 @@ export default function RegisterForm() {
                     <div>
                         <Input
                             type="password"
+                            autoComplete="new-password"
+                            aria-label="Password"
                             placeholder="Password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
                         />
                     </div>
-                    {error && <p className="text-red-500 text-sm">{error}</p>}
-                    {success && <p className="text-green-500 text-sm">{success}</p>}
+                    {error && <p className="text-flag text-sm">{error}</p>}
+                    {success && <p className="text-ok text-sm">{success}</p>}
                     <Button type="submit" className="w-full" disabled={loading}>
-                        {loading ? "Creating account..." : "Sign Up"}
+                        {loading ? "Creating account…" : "Create account"}
                     </Button>
                 </form>
             </CardContent>
             <CardFooter className="justify-center">
-                <Link href="/login" className="text-sm text-blue-600 hover:underline">
-                    Already have an account? Login
+                <Link href="/login" className="text-sm text-primary hover:underline">
+                    Already have an account? Sign in
                 </Link>
             </CardFooter>
         </Card>

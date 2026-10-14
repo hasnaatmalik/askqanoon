@@ -29,16 +29,16 @@ interface MatrixResult {
 const AVAILABLE_JURISDICTIONS = ["Pakistan", "EU", "California", "USA Fed", "UK", "UAE", "Saudi Arabia"];
 
 const statusConfig = {
-    Stricter: { class: "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/30", label: "Stricter" },
-    Compliant: { class: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30", label: "Compliant" },
-    Lax: { class: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30", label: "Lax" },
+    Stricter: { class: "bg-flag/10 text-flag border-flag/30", label: "Stricter" },
+    Compliant: { class: "bg-ok/10 text-ok border-ok/30", label: "Compliant" },
+    Lax: { class: "bg-warn/10 text-warn border-warn/30", label: "Lax" },
     Unknown: { class: "bg-muted text-muted-foreground border-border", label: "Unknown" },
 };
 
 const conflictLevelConfig = {
-    High: { class: "border-l-red-500", badgeClass: "border-red-500/30 text-red-600 dark:text-red-400 bg-red-500/10", label: "High Risk" },
-    Medium: { class: "border-l-amber-500", badgeClass: "border-amber-500/30 text-amber-600 dark:text-amber-400 bg-amber-500/10", label: "Medium Risk" },
-    Low: { class: "border-l-emerald-500", badgeClass: "border-emerald-500/30 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10", label: "Low Risk" },
+    High: { class: "border-l-flag", badgeClass: "border-flag/30 text-flag bg-flag/10", label: "High Risk" },
+    Medium: { class: "border-l-warn", badgeClass: "border-warn/30 text-warn bg-warn/10", label: "Medium Risk" },
+    Low: { class: "border-l-ok", badgeClass: "border-ok/30 text-ok bg-ok/10", label: "Low Risk" },
 };
 
 const EXAMPLE_TOPICS = ["Data Retention", "User Consent", "Breach Notification", "Employment Termination", "Privacy Rights"];
@@ -49,6 +49,7 @@ export function JurisdictionMatrix() {
     const [result, setResult] = useState<MatrixResult | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [expandedRow, setExpandedRow] = useState<number | null>(null);
+    const [error, setError] = useState("");
 
     const toggleJurisdiction = (jur: string) => {
         if (selectedJurisdictions.includes(jur)) {
@@ -63,16 +64,20 @@ export function JurisdictionMatrix() {
         if (!topic || selectedJurisdictions.length < 2) return;
         setIsLoading(true);
         setResult(null);
+        setError("");
         try {
             const res = await fetch("/api/compliance", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ topic, jurisdictions: selectedJurisdictions }),
             });
-            const data = await res.json();
+            const data = await res.json().catch(() => null);
+            if (!res.ok || !data || !Array.isArray(data.matrix)) {
+                throw new Error(data?.error || "We couldn't run this comparison. Please try again.");
+            }
             setResult(data);
-        } catch (error) {
-            console.error(error);
+        } catch (e) {
+            setError(e instanceof Error ? e.message : "Something went wrong. Please try again.");
         } finally {
             setIsLoading(false);
         }
@@ -128,6 +133,7 @@ export function JurisdictionMatrix() {
                                 value={topic}
                                 onChange={(e) => setTopic(e.target.value)}
                                 onKeyDown={(e) => e.key === "Enter" && handleAnalyze()}
+                                aria-label="Regulation topic"
                                 className="bg-background text-foreground border-border placeholder:text-muted-foreground"
                             />
                             <Button
@@ -159,6 +165,12 @@ export function JurisdictionMatrix() {
                     <Loader2 className="h-10 w-10 animate-spin text-primary" />
                     <p className="text-muted-foreground text-sm">Running 4-step compliance analysis across {selectedJurisdictions.length} jurisdictions...</p>
                 </div>
+            )}
+
+            {error && !isLoading && (
+                <p role="alert" className="flex items-start gap-2 rounded-xl bg-flag-soft px-4 py-3 text-sm text-ink">
+                    <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-flag" /> {error}
+                </p>
             )}
 
             {/* Results */}
@@ -205,14 +217,14 @@ export function JurisdictionMatrix() {
                                         <ul className="space-y-2">
                                             {result.conflicts.map((c, i) => (
                                                 <li key={i} className="flex gap-2 text-sm text-muted-foreground">
-                                                    <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
+                                                    <AlertTriangle className="h-4 w-4 text-warn shrink-0 mt-0.5" />
                                                     {c}
                                                 </li>
                                             ))}
                                         </ul>
                                     ) : (
                                         <p className="text-sm text-muted-foreground flex items-center gap-2">
-                                            <Check className="h-4 w-4 text-emerald-500" /> No direct conflicts detected.
+                                            <Check className="h-4 w-4 text-ok" /> No direct conflicts detected.
                                         </p>
                                     )}
                                     {result.gaps?.length ? (

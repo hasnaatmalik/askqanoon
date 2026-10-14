@@ -48,13 +48,15 @@ export default function LoginForm() {
     return (
         <Card className="w-full max-w-md mx-auto">
             <CardHeader>
-                <CardTitle className="text-2xl font-bold text-center">Login to AskQanoon</CardTitle>
+                <CardTitle className="text-2xl font-bold text-center">Welcome back</CardTitle>
             </CardHeader>
             <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <Input
                             type="email"
+                            autoComplete="email"
+                            aria-label="Email"
                             placeholder="Email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -64,33 +66,25 @@ export default function LoginForm() {
                     <div>
                         <Input
                             type="password"
+                            autoComplete="current-password"
+                            aria-label="Password"
                             placeholder="Password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
                         />
                     </div>
-                    {error && <p className="text-red-500 text-sm">{error}</p>}
+                    {error && <p className="text-flag text-sm">{error}</p>}
                     <Button type="submit" className="w-full" disabled={loading}>
-                        {loading ? "Logging in..." : "Login"}
+                        {loading ? "Signing in…" : "Sign in"}
                     </Button>
                 </form>
-                <div className="mt-4 text-center">
-                    <p className="text-sm text-gray-600">Or continue with</p>
-                    <Button
-                        variant="outline"
-                        className="w-full mt-2"
-                        onClick={() => signIn("google")}
-                    >
-                        Google
-                    </Button>
-                </div>
             </CardContent>
             <CardFooter className="flex flex-col gap-2 justify-center">
-                <Link href="/register" className="text-sm text-blue-600 hover:underline">
-                    Don't have an account? Sign up
+                <Link href="/register" className="text-sm text-primary hover:underline">
+                    New here? Create an account
                 </Link>
-                <Link href="/forgot-password" className="text-sm text-gray-500 hover:underline">
+                <Link href="/forgot-password" className="text-sm text-quiet hover:underline">
                     Forgot password?
                 </Link>
             </CardFooter>

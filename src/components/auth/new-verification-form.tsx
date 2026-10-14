@@ -48,13 +48,13 @@ export const NewVerificationForm = () => {
             )}
 
             {success && (
-                <div className="text-green-500 bg-green-100 p-3 rounded-md">
+                <div className="text-ok bg-ok-soft p-3 rounded-md">
                     {success}
                 </div>
             )}
 
             {error && (
-                <div className="text-red-500 bg-red-100 p-3 rounded-md">
+                <div className="text-flag bg-flag-soft p-3 rounded-md">
                     {error}
                 </div>
             )}

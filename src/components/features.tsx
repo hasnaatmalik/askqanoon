@@ -16,8 +16,8 @@ const features = [
         title: "Document Retrieval (RAG)",
         description: "Our system fetches relevant sections from PPC, CrPC, and other verified Pakistani law sources in real-time.",
         icon: Database,
-        color: "text-blue-500",
-        bg: "bg-blue-500/10",
+        color: "text-primary",
+        bg: "bg-primary/10",
     },
     {
         title: "Semantic Search",
@@ -37,22 +37,22 @@ const features = [
         title: "No Authentication",
         description: "Access legal information instantly. No sign-ups required to get the information you need.",
         icon: UserCheck,
-        color: "text-emerald-500",
-        bg: "bg-emerald-500/10",
+        color: "text-ok",
+        bg: "bg-ok/10",
     },
     {
         title: "Source Transparency",
         description: "Every answer includes citations with law names and section numbers for your own verification.",
         icon: FileText,
-        color: "text-orange-500",
-        bg: "bg-orange-500/10",
+        color: "text-warn",
+        bg: "bg-warn/10",
     },
     {
         title: "Guardrails & Safety",
         description: "Strictly provides information, not advice. refuses illegal requests to ensure legal compliance.",
         icon: MessageSquareOff,
-        color: "text-red-500",
-        bg: "bg-red-500/10",
+        color: "text-flag",
+        bg: "bg-flag/10",
     },
 ];
 
@@ -62,7 +62,7 @@ export function Features() {
             <div className="container px-4 md:px-6">
                 <div className="flex flex-col items-center justify-center space-y-4 text-center">
                     <div className="space-y-2">
-                        <h2 className="font-serif text-3xl font-bold tracking-tighter sm:text-5xl">
+                        <h2 className="font-display text-3xl font-bold tracking-tighter sm:text-5xl">
                             Powerful Features for Pakistani Law
                         </h2>
                         <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
@@ -84,7 +84,7 @@ export function Features() {
                                     <div className={`mb-2 flex h-10 w-10 items-center justify-center rounded-lg ${feature.bg} ${feature.color}`}>
                                         <feature.icon className="h-5 w-5" />
                                     </div>
-                                    <CardTitle className="font-serif text-xl">{feature.title}</CardTitle>
+                                    <CardTitle className="font-display text-xl">{feature.title}</CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     <p className="text-sm text-muted-foreground">{feature.description}</p>

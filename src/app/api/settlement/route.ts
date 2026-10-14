@@ -7,8 +7,15 @@ export async function POST(req: NextRequest) {
 
         if (action === "analyze") {
             if (!caseFacts) return NextResponse.json({ error: "Case facts required" }, { status: 400 });
-            const result = await settlementService.analyzeCase(caseFacts, opponentHistory || "No history provided.");
-            return NextResponse.json(result);
+            if (typeof caseFacts !== "string" || caseFacts.length > 6_000) {
+                return NextResponse.json({ error: "Please keep the case description under 6,000 characters." }, { status: 400 });
+            }
+            try {
+                const result = await settlementService.analyzeCase(caseFacts, opponentHistory || "No history provided.");
+                return NextResponse.json(result);
+            } catch {
+                return NextResponse.json({ error: "We couldn't analyze this case right now. Please try again." }, { status: 502 });
+            }
         }
 
         if (action === "draft") {

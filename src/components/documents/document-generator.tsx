@@ -40,14 +40,14 @@ export default function DocumentGenerator() {
                                 setFormData({});
                             }}
                             className={cn(
-                                "cursor-pointer rounded-xl border p-4 transition-all hover:border-green-500 hover:bg-green-50/50",
+                                "cursor-pointer rounded-xl border p-4 transition-all hover:border-primary",
                                 selectedTemplate.id === t.id
-                                    ? "border-green-500 bg-green-50 ring-1 ring-green-500/20"
-                                    : "bg-white border-slate-200"
+                                    ? "border-primary bg-panel ring-1 ring-primary"
+                                    : "bg-card border-line"
                             )}
                         >
                             <h3 className="font-semibold text-sm mb-1">{t.title}</h3>
-                            <p className="text-xs text-slate-500 line-clamp-2">{t.description}</p>
+                            <p className="text-xs text-quiet line-clamp-2">{t.description}</p>
                         </div>
                     ))}
                 </div>
@@ -86,10 +86,10 @@ export default function DocumentGenerator() {
             </div>
 
             {/* Right Column: Live Preview */}
-            <div className="w-full lg:w-1/2 flex flex-col h-full bg-slate-50 rounded-xl border border-slate-200 overflow-hidden shadow-inner">
-                <div className="bg-white border-b border-slate-200 p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-slate-700 font-semibold">
-                        <FileText className="h-5 w-5 text-blue-500" />
+            <div className="w-full lg:w-1/2 flex flex-col h-full bg-panel rounded-xl border border-line overflow-hidden shadow-inner">
+                <div className="bg-card border-b border-line p-4 flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-ink font-semibold">
+                        <FileText className="h-5 w-5 text-primary" />
                         Preview Document
                     </div>
                     <div className="flex gap-2">
@@ -104,7 +104,7 @@ export default function DocumentGenerator() {
                     </div>
                 </div>
 
-                <div className="flex-1 p-8 overflow-y-auto font-serif text-slate-800 leading-relaxed whitespace-pre-wrap text-sm md:text-base bg-white m-4 shadow-sm border border-slate-200 min-h-[500px]">
+                <div className="flex-1 p-8 overflow-y-auto font-display text-ink leading-relaxed whitespace-pre-wrap text-sm md:text-base bg-card m-4 shadow-sm border border-line min-h-[500px]">
                     {selectedTemplate.content(formData)}
                 </div>
             </div>

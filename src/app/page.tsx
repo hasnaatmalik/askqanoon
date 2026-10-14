@@ -68,7 +68,7 @@ export default function Home() {
           <dl className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-line bg-line">
             <div className="bg-card px-4 py-3.5">
               <dt className="text-xs uppercase tracking-[0.12em] text-quiet">Covers</dt>
-              <dd className="mt-1 font-display text-lg font-semibold">Police · Rent · Work · Family</dd>
+              <dd className="mt-1 font-display text-lg font-semibold">Rent · Work · Family</dd>
             </div>
             <div className="bg-card px-4 py-3.5">
               <dt className="text-xs uppercase tracking-[0.12em] text-quiet">Languages</dt>

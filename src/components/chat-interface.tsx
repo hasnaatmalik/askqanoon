@@ -69,10 +69,17 @@ export function ChatInterface({
 
     const lang = useRomanUrdu ? "ur" : "en";
 
-    // Keep the newest message in view.
+    // Keep the conversation in view: new answers start at their top (so long answers are read from
+    // the beginning); questions and the loading indicator pin to the bottom.
     useEffect(() => {
         const el = scrollRef.current;
-        if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+        const last = messages[messages.length - 1];
+        if (!el || !last) return;
+        if (last.role === "assistant" && !isLoading) {
+            document.getElementById(`msg-${last.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+        } else {
+            el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+        }
     }, [messages, isLoading]);
 
     // Cycle the status line while waiting, so the wait feels purposeful.
@@ -231,9 +238,9 @@ export function ChatInterface({
                                     type="button"
                                     aria-pressed={lang === l}
                                     onClick={() => setUseRomanUrdu(l === "ur")}
-                                    className={`rounded-full px-3 py-1.5 transition-colors ${lang === l ? "bg-ink text-background" : "text-quiet hover:text-ink"}`}
+                                    className={`whitespace-nowrap rounded-full px-3 py-1.5 transition-colors ${lang === l ? "bg-ink text-background" : "text-quiet hover:text-ink"}`}
                                 >
-                                    {l === "en" ? "English" : "Roman Urdu"}
+                                    {l === "en" ? "English" : <><span className="sm:hidden">Urdu</span><span className="hidden sm:inline">Roman Urdu</span></>}
                                 </button>
                             ))}
                         </div>
@@ -328,6 +335,8 @@ export function ChatInterface({
                                 ) : (
                                     <motion.div
                                         key={m.id}
+                                        id={`msg-${m.id}`}
+                                        className="scroll-mt-4"
                                         initial={{ opacity: 0, y: 8 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ duration: 0.18 }}
@@ -387,8 +396,8 @@ export function ChatInterface({
                             aria-label="Your legal question"
                             placeholder={
                                 useRomanUrdu
-                                    ? "Roman Urdu mein apna sawal likhein…"
-                                    : "Describe your situation or ask a question…"
+                                    ? "Apna sawal likhein…"
+                                    : "Ask your legal question…"
                             }
                             value={input}
                             maxLength={MAX_QUESTION_LENGTH}
@@ -450,7 +459,7 @@ function AssistantMessage({
 
     const copy = async () => {
         try {
-            const refs = sources.map((s) => `[S${s.id}] ${s.law}${hasSection(s) ? `, Section ${s.section}` : ""}`);
+            const refs = sources.map((s) => `[S${s.id}] ${prettyLaw(s.law)}${hasSection(s) ? `, Section ${s.section}` : ""}`);
             await navigator.clipboard.writeText([message.content, ...(refs.length ? ["", ...refs] : [])].join("\n"));
             setCopied(true);
             setTimeout(() => setCopied(false), 1600);
@@ -557,7 +566,7 @@ function AssistantMessage({
                                             </span>
                                         )}
                                     </div>
-                                    <p className="mt-2 text-sm font-semibold leading-snug">{s.law}</p>
+                                    <p className="mt-2 text-sm font-semibold leading-snug">{prettyLaw(s.law)}</p>
                                     <p className="mt-1.5 line-clamp-4 text-[13px] leading-relaxed text-quiet">
                                         &ldquo;{s.excerpt}&rdquo;
                                     </p>
@@ -614,5 +623,17 @@ function hasSection(s: LegalSource) {
 
 function sourceLabel(s?: LegalSource) {
     if (!s) return undefined;
-    return hasSection(s) ? `${s.law}, Section ${s.section}` : s.law;
+    return hasSection(s) ? `${prettyLaw(s.law)}, Section ${s.section}` : prettyLaw(s.law);
+}
+
+/** "RENT AND TENANCY LAWS (PUNJAB RENTED PREMISES ACT)" → "Rent and Tenancy Laws (Punjab Rented Premises Act)" */
+function prettyLaw(name: string) {
+    if (name !== name.toUpperCase()) return name;
+    const small = new Set(["and", "of", "the", "for", "against", "in", "on"]);
+    return name
+        .toLowerCase()
+        .replace(/\b([a-z])([a-z']*)/g, (w, a: string, rest: string, offset: number) =>
+            offset > 0 && small.has(w) ? w : a.toUpperCase() + rest
+        )
+        .replace(/\b(Ppc|Crpc|Peca|Fia)\b/g, (m) => m.toUpperCase());
 }

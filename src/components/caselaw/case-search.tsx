@@ -99,33 +99,33 @@ export default function CaseSearch() {
     return (
         <div className="space-y-6">
             {/* Search Header */}
-            <Card className="bg-slate-900 dark:bg-slate-950 border-slate-800 text-white shadow-xl">
+            <Card className="border-line bg-panel">
                 <CardContent className="p-6 md:p-8 space-y-6">
                     <div className="flex flex-col md:flex-row gap-4">
                         <div className="relative flex-1">
-                            <Search className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
+                            <Search className="absolute left-3 top-3 h-5 w-5 text-quiet" />
                             <Input
                                 placeholder="Search by party name, citation (e.g. 2018 SCMR), or keywords..."
-                                className="pl-10 h-11 bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus-visible:ring-green-500"
+                                className="pl-10 h-11 bg-card"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
                         <Button
                             onClick={fetchCases}
-                            className="h-11 px-8 bg-green-600 hover:bg-green-700 text-white"
+                            className="h-11 px-8"
                         >
                             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Search"}
                         </Button>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3">
-                        <div className="flex items-center text-sm text-slate-400 mr-2">
+                        <div className="flex items-center text-sm text-quiet mr-2">
                             <Filter className="h-4 w-4 mr-2" /> Filters:
                         </div>
 
                         <Select value={selectedCourt} onValueChange={setSelectedCourt}>
-                            <SelectTrigger className="w-[180px] bg-slate-800 border-slate-700 text-white h-9 text-xs">
+                            <SelectTrigger className="w-[180px] bg-card h-9 text-xs">
                                 <SelectValue placeholder="Court" />
                             </SelectTrigger>
                             <SelectContent>
@@ -135,7 +135,7 @@ export default function CaseSearch() {
                         </Select>
 
                         <Select value={selectedTopic} onValueChange={setSelectedTopic}>
-                            <SelectTrigger className="w-[180px] bg-slate-800 border-slate-700 text-white h-9 text-xs">
+                            <SelectTrigger className="w-[180px] bg-card h-9 text-xs">
                                 <SelectValue placeholder="Legal Topic" />
                             </SelectTrigger>
                             <SelectContent>
@@ -149,7 +149,7 @@ export default function CaseSearch() {
                                 variant="ghost"
                                 size="sm"
                                 onClick={clearFilters}
-                                className="h-9 text-xs text-slate-400 hover:text-white"
+                                className="h-9 text-xs text-quiet hover:text-white"
                             >
                                 <X className="h-3 w-3 mr-1" /> Clear
                             </Button>
@@ -171,45 +171,45 @@ export default function CaseSearch() {
 
                 {loading ? (
                     <div className="flex items-center justify-center py-12">
-                        <Loader2 className="h-8 w-8 animate-spin text-green-600" />
+                        <Loader2 className="h-8 w-8 animate-spin text-ok" />
                     </div>
                 ) : cases.length === 0 ? (
-                    <div className="text-center py-12 text-slate-400">
+                    <div className="text-center py-12 text-quiet">
                         <Gavel className="h-12 w-12 mx-auto mb-4 opacity-20" />
                         <h3 className="font-medium">No results found</h3>
                         <p className="text-sm">Try adjusting your filters or search terms.</p>
                     </div>
                 ) : (
                     cases.map((c) => (
-                        <Card key={c.id} className="hover:border-green-500/50 transition-colors group cursor-pointer">
+                        <Card key={c.id} className="hover:border-primary transition-colors group cursor-pointer">
                             <CardHeader className="pb-3">
                                 <div className="flex justify-between items-start">
                                     <div>
                                         <div className="flex items-center gap-2 mb-2">
-                                            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300">
+                                            <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30 ">
                                                 {c.court}
                                             </Badge>
-                                            <Badge variant="outline" className="bg-slate-50 text-slate-600 dark:bg-slate-900 dark:text-slate-400">
+                                            <Badge variant="outline" className="bg-panel text-ink ">
                                                 {c.topic}
                                             </Badge>
                                         </div>
-                                        <CardTitle className="text-lg text-blue-700 dark:text-blue-400 group-hover:underline decoration-2 underline-offset-4">
+                                        <CardTitle className="text-lg text-primary group-hover:underline decoration-2 underline-offset-4">
                                             {c.title}
                                         </CardTitle>
-                                        <h4 className="font-serif font-bold text-slate-600 dark:text-slate-300 mt-1">{c.citation}</h4>
+                                        <h4 className="font-display font-bold text-ink mt-1">{c.citation}</h4>
                                     </div>
-                                    <div className="text-xs text-slate-400 font-mono bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">
+                                    <div className="text-xs text-quiet font-mono bg-panel px-2 py-1 rounded">
                                         {c.date}
                                     </div>
                                 </div>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                                <p className="text-sm text-ink leading-relaxed">
                                     {c.summary}
                                 </p>
                                 <div className="flex flex-wrap gap-2 mt-4">
                                     {c.tags.map(tag => (
-                                        <span key={tag} className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-500 px-2 py-1 rounded-full">
+                                        <span key={tag} className="text-[10px] bg-panel text-quiet px-2 py-1 rounded-full">
                                             #{tag}
                                         </span>
                                     ))}
@@ -219,7 +219,7 @@ export default function CaseSearch() {
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="ml-auto text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-950"
+                                    className="ml-auto text-ok hover:text-ok hover:bg-ok-soft "
                                     onClick={() => c.sourceUrl && window.open(c.sourceUrl, '_blank')}
                                     disabled={!c.sourceUrl}
                                 >

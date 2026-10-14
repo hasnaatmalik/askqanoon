@@ -45,15 +45,15 @@ export default function ForgotPasswordForm() {
                             required
                         />
                     </div>
-                    {message && <p className="text-green-600 text-sm">{message}</p>}
-                    {error && <p className="text-red-500 text-sm">{error}</p>}
+                    {message && <p className="text-ok text-sm">{message}</p>}
+                    {error && <p className="text-flag text-sm">{error}</p>}
                     <Button type="submit" className="w-full" disabled={loading}>
                         {loading ? "Sending..." : "Send Reset Link"}
                     </Button>
                 </form>
             </CardContent>
             <CardFooter className="justify-center">
-                <Link href="/login" className="text-sm text-blue-600 hover:underline">
+                <Link href="/login" className="text-sm text-primary hover:underline">
                     Back to Login
                 </Link>
             </CardFooter>

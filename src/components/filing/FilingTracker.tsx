@@ -122,10 +122,10 @@ export function FilingTracker() {
 
     const getStatusColor = (status: string) => {
         switch (status) {
-            case "Filed": return "text-green-500 bg-green-100 dark:bg-green-900/30";
-            case "Overdue": return "text-red-500 bg-red-100 dark:bg-red-900/30";
-            case "Drafting": return "text-blue-500 bg-blue-100 dark:bg-blue-900/30";
-            default: return "text-yellow-600 bg-yellow-100 dark:bg-yellow-900/30";
+            case "Filed": return "text-ok bg-ok-soft ";
+            case "Overdue": return "text-flag bg-flag-soft ";
+            case "Drafting": return "text-primary bg-primary/10 ";
+            default: return "text-warn bg-warn-soft ";
         }
     };
 
@@ -140,7 +140,7 @@ export function FilingTracker() {
                 </div>
                 <Dialog open={isAdding} onOpenChange={setIsAdding}>
                     <DialogTrigger asChild>
-                        <Button className="bg-indigo-600 hover:bg-indigo-700">
+                        <Button className="bg-primary hover:bg-primary">
                             <Plus className="mr-2 h-4 w-4" /> New Filing
                         </Button>
                     </DialogTrigger>
@@ -209,7 +209,7 @@ export function FilingTracker() {
                         <CardTitle className="text-sm font-medium text-muted-foreground">Overdue</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-red-500">{deadlines.filter(d => isPast(d.dueDate) && d.status !== "Filed").length}</div>
+                        <div className="text-2xl font-bold text-flag">{deadlines.filter(d => isPast(d.dueDate) && d.status !== "Filed").length}</div>
                     </CardContent>
                 </Card>
                 <Card>
@@ -254,7 +254,7 @@ export function FilingTracker() {
                                     >
                                         <div className="flex items-start gap-4">
                                             <div className={cn("p-2 rounded-full mt-1",
-                                                deadline.priority === "High" ? "bg-red-100 text-red-600 dark:bg-red-900/30" : "bg-blue-100 text-blue-600 dark:bg-blue-900/30"
+                                                deadline.priority === "High" ? "bg-flag-soft text-flag " : "bg-primary/10 text-primary "
                                             )}>
                                                 <Scale className="h-5 w-5" />
                                             </div>
@@ -271,7 +271,7 @@ export function FilingTracker() {
                                                 <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
                                                     <Clock className="h-3 w-3" />
                                                     Due: {format(deadline.dueDate, 'MMM d, yyyy')}
-                                                    {isToday(deadline.dueDate) && <span className="text-orange-500 font-bold ml-1">(TODAY)</span>}
+                                                    {isToday(deadline.dueDate) && <span className="text-warn font-bold ml-1">(TODAY)</span>}
                                                 </div>
                                             </div>
                                         </div>
@@ -292,33 +292,33 @@ export function FilingTracker() {
                 </Card>
 
                 {/* Integration Status / Rules Engine */}
-                <Card className="col-span-1 h-full bg-slate-50 dark:bg-slate-950/50 border-dashed">
+                <Card className="col-span-1 h-full bg-panel border-dashed">
                     <CardHeader>
                         <CardTitle className="text-lg flex items-center">
-                            <Building className="mr-2 h-5 w-5 text-indigo-500" />
+                            <Building className="mr-2 h-5 w-5 text-primary" />
                             Court Integrations
                         </CardTitle>
                         <CardDescription>Live status from EFM systems</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <div className="space-y-4">
-                            <div className="flex items-center justify-between p-3 bg-white dark:bg-slate-900 rounded-md border shadow-sm">
+                            <div className="flex items-center justify-between p-3 bg-card rounded-md border shadow-sm">
                                 <div className="flex items-center gap-3">
-                                    <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                                    <div className="h-2 w-2 rounded-full bg-ok animate-pulse" />
                                     <span className="font-medium text-sm">PACER (Federal)</span>
                                 </div>
                                 <Badge variant="secondary" className="text-xs">Online</Badge>
                             </div>
-                            <div className="flex items-center justify-between p-3 bg-white dark:bg-slate-900 rounded-md border shadow-sm">
+                            <div className="flex items-center justify-between p-3 bg-card rounded-md border shadow-sm">
                                 <div className="flex items-center gap-3">
-                                    <div className="h-2 w-2 rounded-full bg-green-500" />
+                                    <div className="h-2 w-2 rounded-full bg-ok" />
                                     <span className="font-medium text-sm">State E-File (CA)</span>
                                 </div>
                                 <Badge variant="secondary" className="text-xs">Connected</Badge>
                             </div>
-                            <div className="flex items-center justify-between p-3 bg-white dark:bg-slate-900 rounded-md border shadow-sm opacity-50">
+                            <div className="flex items-center justify-between p-3 bg-card rounded-md border shadow-sm opacity-50">
                                 <div className="flex items-center gap-3">
-                                    <div className="h-2 w-2 rounded-full bg-gray-400" />
+                                    <div className="h-2 w-2 rounded-full bg-ink" />
                                     <span className="font-medium text-sm">Odyssey (TX)</span>
                                 </div>
                                 <Badge variant="outline" className="text-xs">Offline</Badge>
@@ -327,10 +327,10 @@ export function FilingTracker() {
 
                         <div className="mt-8">
                             <h4 className="font-semibold mb-3 flex items-center text-sm">
-                                <AlertTriangle className="mr-2 h-4 w-4 text-orange-500" />
+                                <AlertTriangle className="mr-2 h-4 w-4 text-warn" />
                                 Local Rule Alerts
                             </h4>
-                            <div className="p-3 bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-800 rounded-md text-sm text-orange-800 dark:text-orange-300">
+                            <div className="p-3 bg-warn-soft border border-warn/30 rounded-md text-sm text-warn ">
                                 <p className="font-medium mb-1">SDNY - Judge Smith</p>
                                 <p className="text-xs opacity-90">"Courtesy copies must be delivered by 5 PM three days prior to hearing."</p>
                             </div>

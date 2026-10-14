@@ -172,7 +172,7 @@ export function ExpertMatcher() {
             </div>
 
             {/* Search Section */}
-            <Card className="border-indigo-500/20 bg-gradient-to-br from-background to-indigo-500/5 shadow-lg">
+            <Card className="border-primary/20 bg-card">
                 <CardContent className="pt-6">
                     <div className="flex gap-4">
                         <div className="flex-1">
@@ -188,7 +188,7 @@ export function ExpertMatcher() {
                             size="lg"
                             onClick={handleSearch}
                             disabled={isSearching || !searchQuery}
-                            className="h-12 px-8 bg-indigo-600 hover:bg-indigo-700 transition-all duration-300"
+                            className="h-12 px-8 bg-primary hover:bg-primary transition-all duration-300"
                         >
                             {isSearching ? (
                                 <>
@@ -233,12 +233,12 @@ export function ExpertMatcher() {
                                             setVoirDireQuestions([]); // Reset questions
                                         }}
                                     >
-                                        <Card className={`overflow-hidden border transition-all ${selectedExpert?.id === expert.id ? 'border-indigo-500 ring-1 ring-indigo-500 shadow-md' : 'hover:border-indigo-300'}`}>
+                                        <Card className={`overflow-hidden border transition-all ${selectedExpert?.id === expert.id ? 'border-primary/30 ring-1 ring-primary shadow-md' : 'hover:border-primary/30'}`}>
                                             <CardContent className="p-4">
                                                 <div className="flex items-start gap-4">
                                                     <Avatar className="h-12 w-12 border-2 border-background shadow-sm">
                                                         <AvatarImage src={expert.image} />
-                                                        <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-bold">
+                                                        <AvatarFallback className="bg-primary text-primary-foreground font-bold">
                                                             {expert.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
                                                         </AvatarFallback>
                                                     </Avatar>
@@ -246,7 +246,7 @@ export function ExpertMatcher() {
                                                         <div className="flex justify-between items-start">
                                                             <div>
                                                                 <h3 className="font-bold text-lg">{expert.name}</h3>
-                                                                <p className="text-sm text-indigo-600 font-medium">{expert.specialty}</p>
+                                                                <p className="text-sm text-primary font-medium">{expert.specialty}</p>
                                                             </div>
                                                             <Badge variant={expert.credibilityScore > 90 ? "default" : "secondary"} className="ml-2">
                                                                 Score: {expert.credibilityScore}
@@ -301,7 +301,7 @@ export function ExpertMatcher() {
                                                     </Badge>
                                                 )}
                                                 {selectedExpert.daubertRisk === "Medium" && (
-                                                    <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200 border-yellow-200">
+                                                    <Badge variant="secondary" className="bg-warn-soft text-warn hover:bg-warn-soft border-warn/30">
                                                         <AlertTriangle className="mr-1 h-3 w-3" /> Medium Risk
                                                     </Badge>
                                                 )}
@@ -310,7 +310,7 @@ export function ExpertMatcher() {
                                             <CardDescription className="text-base mt-1">{selectedExpert.specialty} • {selectedExpert.location}</CardDescription>
                                         </div>
                                         <div className="text-right">
-                                            <div className="text-3xl font-bold text-indigo-600">{selectedExpert.credibilityScore}<span className="text-sm text-muted-foreground font-normal">/100</span></div>
+                                            <div className="text-3xl font-bold text-primary">{selectedExpert.credibilityScore}<span className="text-sm text-muted-foreground font-normal">/100</span></div>
                                             <div className="text-xs text-muted-foreground">Credibility Index</div>
                                         </div>
                                     </div>
@@ -319,9 +319,9 @@ export function ExpertMatcher() {
                                 <Tabs defaultValue="overview" className="flex-1 flex flex-col">
                                     <div className="px-6 pt-2 border-b">
                                         <TabsList className="bg-transparent p-0 gap-6">
-                                            <TabsTrigger value="overview" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-indigo-600 rounded-none px-1 pb-2 font-medium">Overview</TabsTrigger>
-                                            <TabsTrigger value="testimony" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-indigo-600 rounded-none px-1 pb-2 font-medium">History & Testimony</TabsTrigger>
-                                            <TabsTrigger value="voirdire" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-indigo-600 rounded-none px-1 pb-2 font-medium">Voir Dire Gen</TabsTrigger>
+                                            <TabsTrigger value="overview" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary/30 rounded-none px-1 pb-2 font-medium">Overview</TabsTrigger>
+                                            <TabsTrigger value="testimony" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary/30 rounded-none px-1 pb-2 font-medium">History & Testimony</TabsTrigger>
+                                            <TabsTrigger value="voirdire" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary/30 rounded-none px-1 pb-2 font-medium">Voir Dire Gen</TabsTrigger>
                                         </TabsList>
                                     </div>
 
@@ -334,7 +334,7 @@ export function ExpertMatcher() {
                                                             <div className="text-sm text-muted-foreground mb-1">Win Rate</div>
                                                             <div className="text-2xl font-bold flex items-center">
                                                                 {selectedExpert.winRate}%
-                                                                <TrendingUp className="ml-2 h-4 w-4 text-green-500" />
+                                                                <TrendingUp className="ml-2 h-4 w-4 text-ok" />
                                                             </div>
                                                         </div>
                                                         <div className="bg-muted/30 p-4 rounded-lg">
@@ -353,7 +353,7 @@ export function ExpertMatcher() {
 
                                                     <div>
                                                         <h4 className="font-semibold mb-2 flex items-center">
-                                                            <UserCheck className="mr-2 h-4 w-4 text-indigo-500" />
+                                                            <UserCheck className="mr-2 h-4 w-4 text-primary" />
                                                             Credentials
                                                         </h4>
                                                         <p className="text-sm text-muted-foreground leading-relaxed">
@@ -363,7 +363,7 @@ export function ExpertMatcher() {
 
                                                     <div>
                                                         <h4 className="font-semibold mb-2 flex items-center">
-                                                            <ShieldAlert className="mr-2 h-4 w-4 text-indigo-500" />
+                                                            <ShieldAlert className="mr-2 h-4 w-4 text-primary" />
                                                             Areas of Expertise
                                                         </h4>
                                                         <div className="flex flex-wrap gap-2">
@@ -395,18 +395,18 @@ export function ExpertMatcher() {
 
                                                 <TabsContent value="voirdire" className="mt-0">
                                                     <div className="space-y-4">
-                                                        <div className="bg-indigo-50 rounded-lg p-4 border border-indigo-100 dark:bg-indigo-950/20 dark:border-indigo-900">
-                                                            <h4 className="font-semibold text-indigo-800 dark:text-indigo-300 mb-2 flex items-center">
+                                                        <div className="bg-primary/10 rounded-lg p-4 border border-primary/30 ">
+                                                            <h4 className="font-semibold text-primary mb-2 flex items-center">
                                                                 <BrainCircuit className="mr-2 h-4 w-4" />
                                                                 AI-Generated Cross-Examination
                                                             </h4>
-                                                            <p className="text-sm text-indigo-700/80 dark:text-indigo-300/80 mb-4">
+                                                            <p className="text-sm text-primary mb-4">
                                                                 Based on this expert's profile and past testimony, here are recommended questions to challenge their credibility.
                                                             </p>
 
                                                             {isGeneratingQuestions ? (
                                                                 <div className="flex items-center justify-center py-8">
-                                                                    <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+                                                                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
                                                                 </div>
                                                             ) : voirDireQuestions.length > 0 ? (
                                                                 <ul className="space-y-3">
@@ -427,7 +427,7 @@ export function ExpertMatcher() {
                                                                 </ul>
                                                             ) : (
                                                                 <div className="text-center py-6">
-                                                                    <Button onClick={() => handleGenerateQuestions(selectedExpert)} variant="outline" className="border-indigo-200 hover:bg-indigo-100 hover:text-indigo-900 dark:border-indigo-800 dark:hover:bg-indigo-900/50">
+                                                                    <Button onClick={() => handleGenerateQuestions(selectedExpert)} variant="outline" className="border-primary/30 hover:bg-primary/10 hover:text-primary ">
                                                                         Generate Questions
                                                                     </Button>
                                                                 </div>
@@ -440,7 +440,7 @@ export function ExpertMatcher() {
                                     </CardContent>
 
                                     <CardFooter className="border-t p-4 bg-muted/10">
-                                        <Button className="w-full bg-indigo-600 hover:bg-indigo-700">
+                                        <Button className="w-full bg-primary hover:bg-primary">
                                             <FileText className="mr-2 h-4 w-4" /> Save Profile to Case
                                         </Button>
                                     </CardFooter>

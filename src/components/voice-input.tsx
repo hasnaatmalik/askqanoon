@@ -177,8 +177,8 @@ export function VoiceInput({
                 className={cn(
                     sizeClasses[size],
                     "relative transition-all duration-200",
-                    state === "listening" && "bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/30",
-                    state === "error" && "bg-red-500/10 text-red-500",
+                    state === "listening" && "bg-flag hover:bg-flag text-white shadow-lg shadow-flag/30",
+                    state === "error" && "bg-flag/10 text-flag",
                     className
                 )}
                 title={state === "listening" ? "Click to stop listening" : "Click to speak your question"}
@@ -199,13 +199,13 @@ export function VoiceInput({
                 {state === "listening" && (
                     <>
                         <motion.span
-                            className="absolute inset-0 rounded-full bg-red-400"
+                            className="absolute inset-0 rounded-full bg-flag-soft"
                             initial={{ opacity: 0.5, scale: 1 }}
                             animate={{ opacity: 0, scale: 1.6 }}
                             transition={{ duration: 1, repeat: Infinity, ease: "easeOut" }}
                         />
                         <motion.span
-                            className="absolute inset-0 rounded-full bg-red-400"
+                            className="absolute inset-0 rounded-full bg-flag-soft"
                             initial={{ opacity: 0.3, scale: 1 }}
                             animate={{ opacity: 0, scale: 2.0 }}
                             transition={{ duration: 1, repeat: Infinity, ease: "easeOut", delay: 0.3 }}
@@ -221,10 +221,10 @@ export function VoiceInput({
                         initial={{ opacity: 0, y: 5, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 5, scale: 0.95 }}
-                        className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-50 w-56 px-3 py-2 text-xs text-white bg-red-600 rounded-lg shadow-xl whitespace-normal text-center"
+                        className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-50 w-56 px-3 py-2 text-xs text-white bg-flag rounded-lg shadow-xl whitespace-normal text-center"
                     >
                         {errorMessage}
-                        <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-red-600 rotate-45" />
+                        <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-flag rotate-45" />
                     </motion.div>
                 )}
             </AnimatePresence>

@@ -111,7 +111,7 @@ export default function InheritanceCalculator() {
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                            <Coins className="h-5 w-5 text-yellow-500" />
+                            <Coins className="h-5 w-5 text-warn" />
                             Assets & Deceased Profile
                         </CardTitle>
                     </CardHeader>
@@ -143,7 +143,7 @@ export default function InheritanceCalculator() {
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                            <Users className="h-5 w-5 text-blue-500" />
+                            <Users className="h-5 w-5 text-primary" />
                             Heirs Listing
                         </CardTitle>
                     </CardHeader>
@@ -191,22 +191,22 @@ export default function InheritanceCalculator() {
                     </CardContent>
                 </Card>
 
-                <Button size="lg" className="w-full bg-purple-600 hover:bg-purple-700" onClick={calculateShares}>
+                <Button size="lg" className="w-full bg-primary hover:bg-primary" onClick={calculateShares}>
                     <Scale className="mr-2 h-5 w-5" /> Calculate Shares
                 </Button>
             </div>
 
             <div className="space-y-6">
                 {result ? (
-                    <Card className="h-full border-green-500/20 bg-green-50/20">
+                    <Card className="h-full border-line bg-panel">
                         <CardHeader>
                             <CardTitle>Distribution Result</CardTitle>
                             <CardDescription>Based on Sunni Islamic Laws of Inheritance</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <div className="rounded-md border bg-white overflow-hidden">
+                            <div className="rounded-md border bg-card overflow-hidden">
                                 <table className="w-full text-sm text-left">
-                                    <thead className="bg-slate-100 border-b">
+                                    <thead className="bg-panel border-b">
                                         <tr>
                                             <th className="p-3 font-semibold">Heir</th>
                                             <th className="p-3 font-semibold">Share %</th>
@@ -215,15 +215,15 @@ export default function InheritanceCalculator() {
                                     </thead>
                                     <tbody className="divide-y">
                                         {result.map((item, idx) => (
-                                            <tr key={idx} className="hover:bg-slate-50">
+                                            <tr key={idx} className="hover:bg-panel">
                                                 <td className="p-3 font-medium">{item.relation}</td>
-                                                <td className="p-3 text-slate-600">{item.percentage}%</td>
+                                                <td className="p-3 text-ink">{item.percentage}%</td>
                                                 <td className="p-3 text-right font-bold font-mono">
                                                     {item.amount.toLocaleString()}
                                                 </td>
                                             </tr>
                                         ))}
-                                        <tr className="bg-slate-50 font-bold border-t-2 border-slate-200">
+                                        <tr className="bg-panel font-bold border-t-2 border-line">
                                             <td className="p-3">TOTAL</td>
                                             <td className="p-3">{result.reduce((a, b) => a + b.percentage, 0).toFixed(0)}%</td>
                                             <td className="p-3 text-right">{result.reduce((a, b) => a + b.amount, 0).toLocaleString()}</td>
@@ -231,13 +231,13 @@ export default function InheritanceCalculator() {
                                     </tbody>
                                 </table>
                             </div>
-                            <p className="text-xs text-slate-500 mt-4 italic">
+                            <p className="text-xs text-quiet mt-4 italic">
                                 * This calculation is based on standard Hanafi jurisprudence. Complex cases involving grandparents, predeceased children, or other special scenarios should be verified by a scholar.
                             </p>
                         </CardContent>
                     </Card>
                 ) : (
-                    <div className="h-full flex flex-col items-center justify-center p-12 text-center text-slate-400 border-2 border-dashed rounded-xl">
+                    <div className="h-full flex flex-col items-center justify-center p-12 text-center text-quiet border-2 border-dashed rounded-xl">
                         <Scale className="h-16 w-16 mb-4 opacity-20" />
                         <h3 className="text-lg font-semibold">No Calculation Yet</h3>
                         <p>Enter details and click Calculate to see the breakdown.</p>

@@ -70,7 +70,7 @@ export function VideoAnalysis({ onBack }: VideoAnalysisProps) {
                     <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary mb-6">
                         <Video className="h-8 w-8" />
                     </div>
-                    <h1 className="text-4xl font-serif font-bold tracking-tight text-foreground">
+                    <h1 className="text-4xl font-display font-bold tracking-tight text-foreground">
                         Forensic <span className="text-primary tracking-normal italic font-medium">Video Analysis</span>
                     </h1>
                     <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
@@ -161,16 +161,16 @@ export function VideoAnalysis({ onBack }: VideoAnalysisProps) {
                                 animate={{ opacity: 1, y: 0 }}
                                 className="space-y-6"
                             >
-                                <div className="flex items-center gap-3 text-2xl font-serif font-bold p-2 border-b-2 border-primary/10">
+                                <div className="flex items-center gap-3 text-2xl font-display font-bold p-2 border-b-2 border-primary/10">
                                     <ShieldCheck className="h-7 w-7 text-primary" />
                                     Analysis Results
                                 </div>
 
-                                <Card className="border-none shadow-2xl overflow-hidden bg-white/50 backdrop-blur-sm">
+                                <Card className="border-none shadow-2xl overflow-hidden bg-card/50 backdrop-blur-sm">
                                     <CardContent className="p-8">
-                                        <div className="prose prose-slate max-w-none dark:prose-invert">
+                                        <div className="prose prose-slate max-w-none ">
                                             {result.split('\n').map((line, i) => (
-                                                <p key={i} className="mb-4 text-slate-700 leading-relaxed font-sans">
+                                                <p key={i} className="mb-4 text-ink leading-relaxed font-sans">
                                                     {line}
                                                 </p>
                                             ))}

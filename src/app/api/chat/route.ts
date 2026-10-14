@@ -80,6 +80,6 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ ...result, conversationId: savedConversationId });
     } catch (error: unknown) {
         console.error("Chat API error:", error);
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+        return NextResponse.json({ error: "Something went wrong on our side. Please try again in a moment." }, { status: 500 });
     }
 }

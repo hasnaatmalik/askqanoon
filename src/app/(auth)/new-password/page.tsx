@@ -1,5 +1,6 @@
 "use client";
 
+import { AuthShell } from "@/components/auth/auth-shell";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, Suspense } from "react";
 import { Input } from "@/components/ui/input";
@@ -58,8 +59,8 @@ function NewPasswordForm() {
                             required
                         />
                     </div>
-                    {message && <p className="text-green-600 text-sm">{message}</p>}
-                    {error && <p className="text-red-500 text-sm">{error}</p>}
+                    {message && <p className="text-ok text-sm">{message}</p>}
+                    {error && <p className="text-flag text-sm">{error}</p>}
                     <Button type="submit" className="w-full" disabled={loading}>
                         {loading ? "Resetting..." : "Reset Password"}
                     </Button>
@@ -71,10 +72,10 @@ function NewPasswordForm() {
 
 export default function NewPasswordPage() {
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-50">
-            <Suspense fallback={<div>Loading...</div>}>
+        <AuthShell>
+            <Suspense fallback={<p className="text-center text-quiet">Loading…</p>}>
                 <NewPasswordForm />
             </Suspense>
-        </div>
+        </AuthShell>
     );
 }

@@ -43,12 +43,12 @@ const iconMap: Record<string, React.ElementType> = {
 };
 
 const categoryColors: Record<string, string> = {
-    police: "bg-red-100 text-red-700 border-red-200",
-    property: "bg-blue-100 text-blue-700 border-blue-200",
-    family: "bg-pink-100 text-pink-700 border-pink-200",
-    labor: "bg-orange-100 text-orange-700 border-orange-200",
-    consumer: "bg-purple-100 text-purple-700 border-purple-200",
-    general: "bg-green-100 text-green-700 border-green-200"
+    police: "bg-flag-soft text-flag border-flag/30",
+    property: "bg-primary/10 text-primary border-primary/30",
+    family: "bg-primary/10 text-primary border-primary/30",
+    labor: "bg-warn-soft text-warn border-warn/30",
+    consumer: "bg-primary/10 text-primary border-primary/30",
+    general: "bg-ok-soft text-ok border-ok/30"
 };
 
 const categoryLabels: Record<string, string> = {
@@ -132,7 +132,7 @@ export function DailyTipPopup() {
                     <motion.span
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-background"
+                        className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-flag ring-2 ring-background"
                     />
                 )}
             </Button>
@@ -160,8 +160,8 @@ export function DailyTipPopup() {
                             {/* Header */}
                             <div className="flex items-center justify-between border-b border-border/50 p-4">
                                 <div className="flex items-center gap-2">
-                                    <Lightbulb className="h-5 w-5 text-yellow-500" />
-                                    <h3 className="font-serif font-bold">Know Your Rights</h3>
+                                    <Lightbulb className="h-5 w-5 text-warn" />
+                                    <h3 className="font-display font-bold">Know Your Rights</h3>
                                 </div>
                                 <Button
                                     variant="ghost"
@@ -199,7 +199,7 @@ export function DailyTipPopup() {
                                         </div>
 
                                         {/* Tip Card */}
-                                        <div className="rounded-xl bg-gradient-to-br from-primary/5 to-secondary/5 p-4 border border-primary/10">
+                                        <div className="rounded-xl bg-panel p-4 border border-primary/10">
                                             <div className="flex items-start gap-3">
                                                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
                                                     <Icon className="h-5 w-5" />
@@ -216,8 +216,8 @@ export function DailyTipPopup() {
 
                                             {/* Source */}
                                             <div className="mt-4 flex items-center gap-2 rounded-lg bg-background/50 px-3 py-2 text-xs">
-                                                <Scale className="h-3 w-3 text-emerald-600" />
-                                                <span className="font-mono text-emerald-700">
+                                                <Scale className="h-3 w-3 text-ok" />
+                                                <span className="font-mono text-ok">
                                                     {tip.source}
                                                 </span>
                                             </div>

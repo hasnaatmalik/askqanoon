@@ -32,9 +32,9 @@ const difficultyConfig = {
         icon: Lightbulb,
         label: "Gentle Prep",
         desc: "Supportive examiner with coaching notes after each answer.",
-        activeClass: "border-emerald-500 bg-emerald-500/10 dark:bg-emerald-500/10",
-        iconClass: "text-emerald-600 dark:text-emerald-400",
-        badgeClass: "bg-emerald-500 animate-pulse",
+        activeClass: "border-ok/30 bg-ok/10 ",
+        iconClass: "text-ok ",
+        badgeClass: "bg-ok animate-pulse",
         badgeLabel: "Supportive Mode",
     },
     standard: {
@@ -43,16 +43,16 @@ const difficultyConfig = {
         desc: "Professional and firm opposing counsel — realistic courtroom experience.",
         activeClass: "border-primary bg-primary/10",
         iconClass: "text-primary",
-        badgeClass: "bg-amber-500",
+        badgeClass: "bg-warn",
         badgeLabel: "Standard Mode",
     },
     aggressive: {
         icon: Bomb,
         label: "Stress Test",
         desc: "Hostile examiner looking for contradictions. Prepare for the worst.",
-        activeClass: "border-red-500 bg-red-500/10 dark:bg-red-500/10",
-        iconClass: "text-red-500 dark:text-red-400",
-        badgeClass: "bg-red-500 animate-pulse",
+        activeClass: "border-flag/30 bg-flag/10 ",
+        iconClass: "text-flag ",
+        badgeClass: "bg-flag animate-pulse",
         badgeLabel: "Stress Test Mode",
     },
 };
@@ -137,7 +137,7 @@ export function DepositionSimulator({ onBack }: DepositionSimulatorProps) {
                         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary mb-6">
                             <Gavel className="h-8 w-8" />
                         </div>
-                        <h1 className="text-4xl font-serif font-bold tracking-tight text-foreground">
+                        <h1 className="text-4xl font-display font-bold tracking-tight text-foreground">
                             Witness <span className="text-primary tracking-normal italic font-medium">Prep Simulator</span>
                         </h1>
                         <p className="text-muted-foreground max-w-2xl mx-auto text-lg text-pretty">
@@ -208,7 +208,7 @@ export function DepositionSimulator({ onBack }: DepositionSimulatorProps) {
                         <ChevronLeft className="h-5 w-5" />
                     </Button>
                     <div>
-                        <h2 className="font-serif font-bold text-foreground">Deposition Room</h2>
+                        <h2 className="font-display font-bold text-foreground">Deposition Room</h2>
                         <div className="flex items-center gap-2">
                             <span className={`h-2 w-2 rounded-full ${config.badgeClass}`} />
                             <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
@@ -256,12 +256,12 @@ export function DepositionSimulator({ onBack }: DepositionSimulatorProps) {
 
                                 <div className={`p-5 rounded-2xl shadow-sm border ${msg.role === "user"
                                     ? "bg-primary text-primary-foreground border-primary"
-                                    : "bg-card border-border text-foreground font-serif leading-relaxed"
+                                    : "bg-card border-border text-foreground font-display leading-relaxed"
                                     }`}>
                                     {msg.content.split('\n').map((line, idx) => {
                                         if (line.includes("⚖️ [CONSISTENCY ALERT]")) {
                                             return (
-                                                <div key={idx} className="mb-4 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 flex items-start gap-3">
+                                                <div key={idx} className="mb-4 p-4 rounded-xl bg-flag/10 border border-flag/20 text-flag flex items-start gap-3">
                                                     <AlertTriangle className="h-5 w-5 shrink-0 mt-0.5" />
                                                     <span className="font-sans font-bold text-sm tracking-tight">{line.replace("⚖️ [CONSISTENCY ALERT]", "").trim()}</span>
                                                 </div>
@@ -269,7 +269,7 @@ export function DepositionSimulator({ onBack }: DepositionSimulatorProps) {
                                         }
                                         if (line.includes("[COACH NOTE]")) {
                                             return (
-                                                <div key={idx} className="mt-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400 flex items-start gap-3">
+                                                <div key={idx} className="mt-4 p-4 rounded-xl bg-warn/10 border border-warn/20 text-warn flex items-start gap-3">
                                                     <Lightbulb className="h-5 w-5 shrink-0 mt-0.5" />
                                                     <div className="text-sm font-sans">
                                                         <span className="font-bold block mb-1">Coach Note:</span>

@@ -1,24 +1,14 @@
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { mockRights } from "@/data/rights/mock-rights";
 
-import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-export async function GET(req: NextRequest) {
+export async function GET() {
     try {
-        const prisma = new PrismaClient();
-        const rights = await prisma.right.findMany({
-            orderBy: { article: 'asc' },
-            take: 50
-        });
-        await prisma.$disconnect();
-
-        return NextResponse.json({ rights });
-    } catch (error: any) {
-        console.error("Rights Fetch Error:", error);
-        // Write to file to debug
-        const fs = require('fs');
-        const path = require('path');
-        fs.writeFileSync(path.join(process.cwd(), 'public', 'rights-error.txt'), JSON.stringify({ message: error.message, stack: error.stack }, null, 2));
-
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+        const rights = await prisma.right.findMany({ orderBy: { article: "asc" }, take: 50 });
+        if (rights.length > 0) return NextResponse.json({ rights });
+    } catch (error) {
+        console.error("Rights fetch error (using built-in list):", error);
     }
+    // Database empty or unavailable: serve the built-in constitutional rights so the page never breaks.
+    return NextResponse.json({ rights: mockRights });
 }

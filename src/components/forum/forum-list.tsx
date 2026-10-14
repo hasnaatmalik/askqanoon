@@ -132,17 +132,17 @@ export default function ForumList() {
     if (loading) {
         return (
             <div className="flex items-center justify-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-green-600" />
+                <Loader2 className="h-8 w-8 animate-spin text-ok" />
             </div>
         );
     }
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between bg-slate-50 dark:bg-slate-900 p-4 rounded-lg border border-slate-200 dark:border-slate-800">
+            <div className="flex items-center justify-between bg-panel p-4 rounded-lg border border-line ">
                 <div>
-                    <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200">Recent Discussions</h3>
-                    <p className="text-sm text-slate-500">Join the conversation with the community.</p>
+                    <h3 className="text-lg font-semibold text-ink ">Recent Discussions</h3>
+                    <p className="text-sm text-quiet">Join the conversation with the community.</p>
                 </div>
                 <div className="flex gap-2">
                     <Button variant="outline" size="icon" onClick={fetchThreads}>
@@ -150,7 +150,7 @@ export default function ForumList() {
                     </Button>
                     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                         <DialogTrigger asChild>
-                            <Button className="bg-green-600 hover:bg-green-700" disabled={!session}>
+                            <Button disabled={!session}>
                                 <PlusCircle className="mr-2 h-4 w-4" />
                                 New Topic
                             </Button>
@@ -228,7 +228,7 @@ export default function ForumList() {
                                 <Button
                                     onClick={handleSubmit}
                                     disabled={submitting || !newTitle || !newContent || !newCategory}
-                                    className="bg-green-600 hover:bg-green-700"
+                                    
                                 >
                                     {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                     Post Topic
@@ -246,41 +246,41 @@ export default function ForumList() {
             ) : (
                 <div className="space-y-4">
                     {threads.map((thread) => (
-                        <Card key={thread.id} className="hover:border-green-500/50 transition-all cursor-pointer group">
+                        <Card key={thread.id} className="hover:border-primary transition-all cursor-pointer group">
                             <CardContent className="p-6">
                                 <div className="flex flex-col md:flex-row gap-4 justify-between">
                                     <div className="space-y-2 flex-1">
                                         <div className="flex items-center gap-2">
-                                            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300">
+                                            <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30 ">
                                                 {thread.category}
                                             </Badge>
-                                            <span className="text-xs text-slate-400 flex items-center">
+                                            <span className="text-xs text-quiet flex items-center">
                                                 <Clock className="h-3 w-3 mr-1" /> {thread.lastActive}
                                             </span>
                                         </div>
-                                        <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200 group-hover:text-green-700 dark:group-hover:text-green-500 flex items-center gap-2">
+                                        <h3 className="text-lg font-bold text-ink group-hover:text-ok flex items-center gap-2">
                                             {thread.title}
                                         </h3>
-                                        <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2">
+                                        <p className="text-sm text-ink line-clamp-2">
                                             {thread.preview}
                                         </p>
                                         <div className="flex items-center gap-2 pt-2">
-                                            <div className="flex items-center text-xs text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-full">
+                                            <div className="flex items-center text-xs text-quiet bg-panel px-2 py-1 rounded-full">
                                                 <User className="h-3 w-3 mr-1" />
-                                                {thread.author} • <span className="text-green-600 font-medium ml-1">{thread.role}</span>
+                                                {thread.author} • <span className="text-ok font-medium ml-1">{thread.role}</span>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div className="flex md:flex-col items-center justify-center gap-4 border-t md:border-t-0 md:border-l border-slate-100 dark:border-slate-800 pt-4 md:pt-0 md:pl-6 min-w-[100px]">
-                                        <div className="flex flex-col items-center text-slate-500">
-                                            <div className="flex items-center gap-1 font-semibold text-lg text-slate-700 dark:text-slate-300">
+                                    <div className="flex md:flex-col items-center justify-center gap-4 border-t md:border-t-0 md:border-l border-line pt-4 md:pt-0 md:pl-6 min-w-[100px]">
+                                        <div className="flex flex-col items-center text-quiet">
+                                            <div className="flex items-center gap-1 font-semibold text-lg text-ink ">
                                                 <MessageSquare className="h-4 w-4" />
                                                 {thread.replies}
                                             </div>
                                             <span className="text-xs">Replies</span>
                                         </div>
-                                        <div className="flex flex-col items-center text-slate-400">
+                                        <div className="flex flex-col items-center text-quiet">
                                             <div className="flex items-center gap-1">
                                                 <Eye className="h-4 w-4" />
                                                 {thread.views}

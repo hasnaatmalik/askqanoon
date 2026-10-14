@@ -4,7 +4,7 @@ export function Footer() {
             <div className="container px-4 md:px-6">
                 <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
                     <div className="space-y-4">
-                        <h3 className="font-serif text-xl font-bold italic">
+                        <h3 className="font-display text-xl font-bold italic">
                             Ask<span className="text-secondary-foreground">Qanoon</span>
                         </h3>
                         <p className="text-sm text-muted-foreground">

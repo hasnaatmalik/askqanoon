@@ -97,7 +97,7 @@ export function ExhibitManager() {
 
                     <Dialog open={showExportDialog} onOpenChange={setShowExportDialog}>
                         <DialogTrigger asChild>
-                            <Button className="bg-indigo-600 hover:bg-indigo-700">
+                            <Button className="bg-primary hover:bg-primary">
                                 <Printer className="mr-2 h-4 w-4" /> Export Index
                             </Button>
                         </DialogTrigger>
@@ -106,7 +106,7 @@ export function ExhibitManager() {
                                 <DialogTitle>Exhibit Index</DialogTitle>
                                 <DialogDescription>Formatted index for trial binders.</DialogDescription>
                             </DialogHeader>
-                            <ScrollArea className="h-[400px] border rounded-md p-4 bg-white dark:bg-slate-950 font-mono text-sm">
+                            <ScrollArea className="h-[400px] border rounded-md p-4 bg-card font-mono text-sm">
                                 <div className="space-y-4">
                                     <div className="text-center font-bold border-b pb-2 mb-4">
                                         <p>SUPERIOR COURT OF CALIFORNIA</p>
@@ -172,22 +172,22 @@ export function ExhibitManager() {
                     </div>
                 </CardHeader>
 
-                <CardContent className="flex-1 overflow-hidden p-0 bg-slate-50/50 dark:bg-slate-950/20">
+                <CardContent className="flex-1 overflow-hidden p-0 bg-panel ">
                     <ScrollArea className="h-full p-6">
                         <Reorder.Group axis="y" values={exhibits} onReorder={handleReorder} className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6" : "space-y-2"}>
                             {filteredExhibits.map((exhibit) => (
                                 <Reorder.Item key={exhibit.id} value={exhibit} dragListener={viewMode === "list"}> {/* Enable drag in list mode for simplicity, or handle grid drag later */}
                                     {viewMode === "grid" ? (
                                         <motion.div layoutId={exhibit.id} className="relative group cursor-grab active:cursor-grabbing">
-                                            <Card className="overflow-hidden hover:shadow-lg transition-shadow border-indigo-200/50 dark:border-indigo-800/50">
-                                                <div className="h-32 bg-slate-200 dark:bg-slate-800 flex items-center justify-center relative">
-                                                    {exhibit.type === "Image" ? <ImageIcon className="h-12 w-12 text-slate-400" /> :
-                                                        exhibit.type === "Email" ? <FileOutput className="h-12 w-12 text-slate-400" /> :
-                                                            <FileText className="h-12 w-12 text-slate-400" />}
+                                            <Card className="overflow-hidden hover:shadow-lg transition-shadow border-primary/50 ">
+                                                <div className="h-32 bg-line flex items-center justify-center relative">
+                                                    {exhibit.type === "Image" ? <ImageIcon className="h-12 w-12 text-quiet" /> :
+                                                        exhibit.type === "Email" ? <FileOutput className="h-12 w-12 text-quiet" /> :
+                                                            <FileText className="h-12 w-12 text-quiet" />}
 
                                                     {/* Sticker Overlay */}
                                                     {showStickers && (
-                                                        <div className="absolute bottom-2 right-2 bg-yellow-400 text-black px-3 py-1 text-xs font-bold shadow-md transform rotate-[-2deg] border border-yellow-600">
+                                                        <div className="absolute bottom-2 right-2 bg-warn-soft text-black px-3 py-1 text-xs font-bold shadow-md transform rotate-[-2deg] border border-warn/30">
                                                             EXHIBIT {exhibit.number}
                                                         </div>
                                                     )}
@@ -205,7 +205,7 @@ export function ExhibitManager() {
                                                         <span className="text-[10px] text-muted-foreground">{exhibit.date}</span>
                                                     </div>
                                                     {exhibit.linkedTo && (
-                                                        <div className="mt-2 flex items-center text-[10px] text-indigo-600 bg-indigo-50 dark:bg-indigo-950/30 w-fit px-1.5 py-0.5 rounded">
+                                                        <div className="mt-2 flex items-center text-[10px] text-primary bg-primary/10 w-fit px-1.5 py-0.5 rounded">
                                                             <LinkIcon className="h-3 w-3 mr-1" />
                                                             Linked to Ex {exhibit.linkedTo.map(id => exhibits.find(e => e.id === id)?.number).join(", ")}
                                                         </div>
@@ -219,10 +219,10 @@ export function ExhibitManager() {
                                                 <div className="cursor-grab text-muted-foreground">
                                                     <Move className="h-4 w-4" />
                                                 </div>
-                                                <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded flex items-center justify-center relative flex-shrink-0">
-                                                    <span className="text-sm font-bold text-slate-500">{exhibit.number}</span>
+                                                <div className="w-12 h-12 bg-panel rounded flex items-center justify-center relative flex-shrink-0">
+                                                    <span className="text-sm font-bold text-quiet">{exhibit.number}</span>
                                                     {showStickers && (
-                                                        <div className="absolute -bottom-1 -right-1 bg-yellow-400 text-black px-1.5 py-0.5 text-[8px] font-bold shadow-sm border border-yellow-600">
+                                                        <div className="absolute -bottom-1 -right-1 bg-warn-soft text-black px-1.5 py-0.5 text-[8px] font-bold shadow-sm border border-warn/30">
                                                             EX
                                                         </div>
                                                     )}

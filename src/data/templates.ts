@@ -30,7 +30,7 @@ export const templates: DocumentTemplate[] = [
         content: (data) => `
 TENANCY AGREEMENT
 
-This Agreement is made on this day of ${new Date().toLocaleDateString()} between:
+This Agreement is made on this day of ${new Date().toLocaleDateString("en-GB")} between:
 
 LANDLORD: ${data.landlordName || "[Landlord Name]"}
 AND
@@ -89,7 +89,7 @@ ____________________
 ${data.deponentName || "[Name]"}
 CNIC: ${data.cnic || "[CNIC]"}
 
-Date: ${new Date().toLocaleDateString()}
+Date: ${new Date().toLocaleDateString("en-GB")}
         `
     },
     {
@@ -104,7 +104,7 @@ Date: ${new Date().toLocaleDateString()}
             { id: "reason", label: "Reason (Optional)", type: "textarea", placeholder: "I have decided to pursue other opportunities..." },
         ],
         content: (data) => `
-Date: ${new Date().toLocaleDateString()}
+Date: ${new Date().toLocaleDateString("en-GB")}
 
 To,
 ${data.managerName || "[Manager Name]"}

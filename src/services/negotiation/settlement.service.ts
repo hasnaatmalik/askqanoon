@@ -87,20 +87,10 @@ Use this exact schema:
             const result = await chain.invoke({ caseFacts, opponentHistory });
             const cleanJson = result.replace(/```json/g, "").replace(/```/g, "").trim();
             return JSON.parse(cleanJson);
-        } catch (error: any) {
+        } catch (error) {
+            // Never fabricate numbers: let the API report the failure so the UI can say so.
             console.error("Settlement Analysis Error:", error);
-            return {
-                opponentStrategy: "Analysis unavailable — please retry.",
-                opponentBATNA: "Unknown",
-                ourBATNA: "Unknown",
-                zopa: "Unable to determine",
-                settlementRange: { low: 0, ideal: 0, high: 0 },
-                winProbability: 50,
-                recommendedOffer: 0,
-                keyLeverages: [],
-                watchOuts: [],
-                rationale: "Service error. Please try again.",
-            };
+            throw new Error("analysis_failed");
         }
     }
 
