@@ -6,6 +6,7 @@ export interface ChatTurn {
 }
 
 export interface LegalSource {
+  /** Display number, matching the [S#] tags in the answer text. */
   id: number;
   law: string;
   section: string;
@@ -14,7 +15,12 @@ export interface LegalSource {
 
 export interface ChatResult {
   answer: string;
+  /** Only the sources the answer actually cites, numbered in order of first citation. */
   sources: LegalSource[];
+  /** Suggested next questions the user can tap. */
+  followUps: string[];
+  /** True when the answer is backed by at least one valid citation. */
+  grounded: boolean;
 }
 
 export function isChatTurn(value: unknown): value is ChatTurn {

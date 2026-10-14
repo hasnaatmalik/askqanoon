@@ -1,10 +1,20 @@
 import Groq from "groq-sdk";
 import { Document } from "@langchain/core/documents";
 import type { ChatResult, ChatTurn, LegalSource } from "@/lib/chat";
+import { finalizeAnswer } from "@/lib/citations";
+import { REWRITE_SYSTEM_PROMPT, buildSystemPrompt, buildUserMessage, formatSources } from "@/lib/prompts";
 
 const MAX_QUESTION_LENGTH = 2_000;
 const MAX_HISTORY_TURNS = 6;
 const MAX_HISTORY_CHARS = 3_000;
+const RETRIEVAL_K = 6;
+const MAX_CONTEXT_DOCS = 6;
+const RRF_K = 60;
+
+interface RetrievalPlan {
+    standaloneQuestion: string;
+    hypotheticalPassage: string;
+}
 
 function asErrorMessage(error: unknown) {
     return error instanceof Error ? error.message : String(error);
@@ -33,12 +43,11 @@ function hasValidKeys() {
 }
 
 export class RAGService {
-    private groq: Groq;
+    private client?: Groq;
 
-    constructor() {
-        this.groq = new Groq({
-            apiKey: process.env.GROQ_API_KEY,
-        });
+    /** Created on first use so builds and tests don't need GROQ_API_KEY. */
+    private get groq(): Groq {
+        return (this.client ??= new Groq({ apiKey: process.env.GROQ_API_KEY }));
     }
 
     private get chatModel() {
@@ -72,30 +81,46 @@ export class RAGService {
         return await PineconeStore.fromExistingIndex(embeddings, { pineconeIndex: index });
     }
 
+    private get isReasoningModel() {
+        return this.chatModel.startsWith("openai/gpt-oss");
+    }
+
     /**
-     * HyDE — Hypothetical Document Embeddings
-     * Generate a short "ideal answer" and embed THAT for retrieval.
-     * This dramatically improves recall for vague or jargon-light questions.
+     * Query rewriting + HyDE in a single cheap call.
+     * Produces a standalone English question (so follow-ups like "what about bail?" work)
+     * and a hypothetical statute passage to embed. Any failure falls back to the raw question.
      */
-    private async generateHypotheticalDocument(question: string): Promise<string> {
+    private async prepareRetrieval(question: string, history: ChatTurn[]): Promise<RetrievalPlan> {
+        const fallback: RetrievalPlan = { standaloneQuestion: question, hypotheticalPassage: question };
         try {
+            const recent = truncateHistory(history.slice(-4));
             const completion = await this.groq.chat.completions.create({
                 model: this.hydeModel,
                 messages: [
+                    { role: "system", content: REWRITE_SYSTEM_PROMPT },
                     {
-                        role: "system",
-                        content:
-                            "You are a Pakistani law expert. Write a short, precise paragraph (3-5 sentences) that would appear in an official Pakistani law document and directly answers the question. Use formal legal language, cite plausible section numbers. This is for retrieval purposes only — accuracy is secondary to relevance.",
+                        role: "user",
+                        content: `${recent ? `<history>\n${recent}\n</history>\n\n` : ""}<question>${question}</question>`,
                     },
-                    { role: "user", content: question },
                 ],
-                max_tokens: 600,
-                temperature: 0.3,
+                max_tokens: 700,
+                temperature: 0.2,
+                response_format: { type: "json_object" },
+                ...(this.hydeModel.startsWith("openai/gpt-oss") ? { reasoning_effort: "low" as const } : {}),
             });
-            return completion.choices[0]?.message?.content || question;
+            const parsed = JSON.parse(completion.choices[0]?.message?.content || "{}");
+            return {
+                standaloneQuestion:
+                    typeof parsed.standalone_question === "string" && parsed.standalone_question.trim()
+                        ? parsed.standalone_question.trim()
+                        : question,
+                hypotheticalPassage:
+                    typeof parsed.hypothetical_passage === "string" && parsed.hypothetical_passage.trim()
+                        ? parsed.hypothetical_passage.trim()
+                        : question,
+            };
         } catch {
-            // HyDE failure is non-fatal — fall back to raw question
-            return question;
+            return fallback;
         }
     }
 
@@ -103,132 +128,98 @@ export class RAGService {
         try {
             const safeQuestion = question.trim().slice(0, MAX_QUESTION_LENGTH);
 
-            // --- STEP 1: RAG retrieval (only if keys are configured) ---
+            // --- STEP 1: Rewrite + retrieve (only if keys are configured) ---
             let docs: Document[] = [];
             let retrievalError = false;
+            let plan: RetrievalPlan = { standaloneQuestion: safeQuestion, hypotheticalPassage: safeQuestion };
             const ragEnabled = hasValidKeys();
 
             if (ragEnabled) {
                 try {
                     const vectorStore = await this.getVectorStore();
+                    plan = await this.prepareRetrieval(safeQuestion, history);
 
-                    const recentUserMessages = history
-                        .filter((m) => m.role === "user")
-                        .slice(-2)
-                        .map((m) => m.content)
-                        .join(" ");
-
-                    const hydeDoc = await this.generateHypotheticalDocument(
-                        recentUserMessages ? `${recentUserMessages} ${safeQuestion}` : safeQuestion
+                    // Three probes: the HyDE passage, the standalone question, and the raw words.
+                    const retriever = vectorStore.asRetriever({ k: RETRIEVAL_K });
+                    const probes = Array.from(
+                        new Set([plan.hypotheticalPassage, plan.standaloneQuestion, safeQuestion])
                     );
+                    const results = await Promise.all(probes.map((p) => retriever.invoke(p)));
 
-                    const retriever = vectorStore.asRetriever({ k: 8 });
-                    const [hydeDocs, rawDocs] = await Promise.all([
-                        retriever.invoke(hydeDoc),
-                        retriever.invoke(safeQuestion),
-                    ]);
-
-                    // Merge and deduplicate by content prefix
-                    const seen = new Set<string>();
-                    for (const doc of [...hydeDocs, ...rawDocs]) {
-                        const key = doc.pageContent.slice(0, 100);
-                        if (!seen.has(key)) {
-                            seen.add(key);
-                            docs.push(doc);
-                            if (docs.length >= 8) break;
-                        }
+                    // Reciprocal-rank fusion: chunks found by several probes rise to the top.
+                    const scores = new Map<string, { doc: Document; score: number }>();
+                    for (const list of results) {
+                        list.forEach((doc, rank) => {
+                            const key = doc.pageContent.replace(/\s+/g, " ").slice(0, 120);
+                            const entry = scores.get(key) ?? { doc, score: 0 };
+                            entry.score += 1 / (RRF_K + rank + 1);
+                            scores.set(key, entry);
+                        });
                     }
+                    docs = [...scores.values()]
+                        .sort((a, b) => b.score - a.score)
+                        .slice(0, MAX_CONTEXT_DOCS)
+                        .map((e) => e.doc);
                 } catch (pineconeError) {
                     console.error("Pinecone/Embedding Retrieval Error:", pineconeError);
                     retrievalError = true;
                 }
             }
 
-            // --- STEP 2: Build structured context ---
-            const sources: LegalSource[] = docs.map((doc, index) => ({
+            // --- STEP 2: Build tagged context ---
+            const retrieved: LegalSource[] = docs.map((doc, index) => ({
                 id: index + 1,
                 law: String(doc.metadata.law_name || "Pakistani Law"),
                 section: String(doc.metadata.section_number || "N/A"),
-                excerpt: doc.pageContent.replace(/\s+/g, " ").slice(0, 280),
+                excerpt: doc.pageContent.replace(/\s+/g, " ").trim().slice(0, 280),
             }));
-
-            let context: string;
-            if (!ragEnabled) {
-                context = "RAG_NOT_CONFIGURED";
-            } else if (docs.length === 0) {
-                context = "NO_RETRIEVED_CONTEXT";
-            } else {
-                context = docs
-                    .map(
-                        (doc, i) =>
-                            `[S${i + 1}] ${sources[i].law}${sources[i].section !== "N/A" ? `, Section ${sources[i].section}` : ""}:\n${doc.pageContent.trim()}`
-                    )
-                    .join("\n\n---\n\n");
-            }
-
-            // --- STEP 3: Build conversation history block ---
+            const sourcesBlock = formatSources(retrieved, docs.map((d) => d.pageContent));
             const historyBlock = history.length > 0 ? truncateHistory(history) : "";
 
-            const languageInstruction = useRomanUrdu
-                ? "RESPOND ENTIRELY IN ROMAN URDU (Urdu written with Latin letters). NEVER use Urdu/Arabic script. Keep law names and section references in English exactly as cited. Example style: 'Aap FIR darj karwa sakte hain Section 154 CrPC ke tehat.'"
-                : "Respond in clear, simple English suitable for a non-lawyer Pakistani citizen.";
-
-            // --- STEP 4: Advanced RAG prompt with chain-of-thought ---
-            const systemPrompt = `You are "AskQanoon", a trusted legal information assistant for Pakistani law. Your users are ordinary citizens — not lawyers — who need clear, honest, source-grounded explanations.
-
-CRITICAL RULES (follow all; break none):
-1. CONTEXT IS KING: Base EVERY legal claim on the retrieved context below. Do not use memorized knowledge, invent section numbers, or guess at law.
-2. NO CONTEXT = SAY SO: If context is "NO_RETRIEVED_CONTEXT" or the retrieved passages do not answer the question, clearly state: "I cannot verify this from the current legal database. Please consult a qualified Pakistani lawyer."
-3. RAG NOT CONFIGURED: If context is "RAG_NOT_CONFIGURED", explain that you can provide general guidance based on your training, but citations are not available in this setup. Still be helpful but clearly caveat every statement as uncited.
-4. CITATION FORMAT: End every sentence or bullet that states a legal fact with its source tag — e.g., [S1] or [S1][S3]. Never cite a source that wasn't used.
-5. NO LEGAL ADVICE: Provide information, never verdicts, guarantees, or instructions to circumvent law enforcement.
-6. HISTORY IS CONTEXT ONLY: Use conversation history to resolve pronouns, but never treat prior assistant messages as new legal authority.
-7. AMBIGUITY: If the question is unclear, ask one specific follow-up question before answering.
-
-OUTPUT FORMAT:
-- Start with a 1-2 sentence plain-language summary of the answer.
-- Use **numbered lists** for procedures/steps.
-- Use **bold** for key legal terms, law names, and organizations.
-- Use bullet sub-points for details or exceptions.
-- Add a "⚠️ Note:" section for anything you could not verify from the provided context.
-- ${languageInstruction}`;
-
-            const userMessage = `${historyBlock ? `CONVERSATION HISTORY:\n${historyBlock}\n\n` : ""}RETRIEVED LEGAL CONTEXT FROM PAKISTANI LAW DATABASE:
-${context}
-
-USER QUESTION: ${safeQuestion}
-
-Think step-by-step: Which sources (if any) answer this question? What exactly do they say? Now write a clear, cited answer:`;
-
-            // --- STEP 5: Groq LLM completion ---
+            // --- STEP 3: Generate ---
             const completion = await this.groq.chat.completions.create({
                 model: this.chatModel,
                 messages: [
-                    { role: "system", content: systemPrompt },
-                    { role: "user", content: userMessage },
+                    { role: "system", content: buildSystemPrompt(useRomanUrdu) },
+                    {
+                        role: "user",
+                        content: buildUserMessage({
+                            question: safeQuestion,
+                            standaloneQuestion: plan.standaloneQuestion,
+                            history: historyBlock,
+                            sourcesBlock,
+                            ragConfigured: ragEnabled && !retrievalError,
+                        }),
+                    },
                 ],
-                max_tokens: 4096,  // reasoning model needs extra tokens for thinking + response
+                max_tokens: 4096, // reasoning models spend part of this on thinking
                 temperature: 0.1,
                 top_p: 0.9,
+                ...(this.isReasoningModel ? { reasoning_effort: "low" as const } : {}),
             });
 
-            const answer = completion.choices[0]?.message?.content || "Unable to generate a response. Please try again.";
+            const raw = completion.choices[0]?.message?.content || "";
+            if (!raw.trim()) {
+                return {
+                    answer: "I couldn't generate an answer just now. Please try again.",
+                    sources: [],
+                    followUps: [],
+                    grounded: false,
+                };
+            }
 
-            // --- STEP 6: Determine if sources should be shown ---
-            const noInfoPhrases = [
-                "cannot verify this from the current legal database",
-                "I cannot verify",
-                "not found in the provided context",
-                "no information available",
-                "consult a qualified",
-                "meray paas is baray mein",
-            ];
+            // --- STEP 4: Verify citations in code, show only the sources actually used ---
+            const final = finalizeAnswer(raw, retrieved);
+            if (final.invalidCitations > 0) {
+                console.warn(`Model produced ${final.invalidCitations} citation tag(s) with no matching source.`);
+            }
 
-            const hasNoInfo = noInfoPhrases.some((phrase) =>
-                answer.toLowerCase().includes(phrase.toLowerCase())
-            );
-
-            return { answer, sources: hasNoInfo || retrievalError || !ragEnabled ? [] : sources };
+            return {
+                answer: final.answer,
+                sources: final.sources,
+                followUps: final.followUps,
+                grounded: final.sources.length > 0,
+            };
         } catch (error: unknown) {
             console.error("RAG Query Error:", error);
 
@@ -241,15 +232,14 @@ Think step-by-step: Which sources (if any) answer this question? What exactly do
                 message.includes("Authentication") ||
                 message.includes("Unauthorized");
 
-            let errorMessage = "⚠️ **System Error**: An unexpected error occurred. Please try again in a moment.";
-
+            let errorMessage = "Something went wrong on our side. Please try again in a moment.";
             if (isApiKeyError) {
-                errorMessage = "⚠️ **Configuration Error**: The AI service key is invalid. Please check your `GROQ_API_KEY` in the `.env` file.";
+                errorMessage = "The AI service isn't configured correctly right now. Please try again later.";
             } else if (isQuotaError) {
-                errorMessage = "⚠️ **Service Limit Reached**: The AI service has reached its usage limit. Please try again in a few seconds — Groq resets quickly.";
+                errorMessage = "We're getting a lot of questions right now. Please try again in a few seconds.";
             }
 
-            return { answer: errorMessage, sources: [] };
+            return { answer: errorMessage, sources: [], followUps: [], grounded: false };
         }
     }
 

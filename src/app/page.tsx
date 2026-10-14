@@ -4,13 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { LANDING_STARTERS } from "@/data/starter-questions";
 
-const starters = [
-  "What happens if my landlord keeps my deposit?",
-  "Can I refuse a police summons?",
-  "How do I report an online order gone wrong?",
-  "What are my rights as a tenant?",
-];
 
 const sources = [
   {
@@ -48,10 +43,11 @@ export default function Home() {
   const [question, setQuestion] = useState("");
   const router = useRouter();
 
-  const handleAsk = () => {
-    if (!question.trim()) return;
-    router.push(`/chat?q=${encodeURIComponent(question)}&lang=${lang}`);
+  const ask = (text: string) => {
+    if (!text.trim()) return;
+    router.push(`/chat?q=${encodeURIComponent(text.trim())}&lang=${lang}`);
   };
+  const handleAsk = () => ask(question);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -71,8 +67,8 @@ export default function Home() {
 
           <dl className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-line bg-line">
             <div className="bg-card px-4 py-3.5">
-              <dt className="text-xs uppercase tracking-[0.12em] text-quiet">Sources</dt>
-              <dd className="mt-1 font-display text-lg font-semibold">PPC · CrPC</dd>
+              <dt className="text-xs uppercase tracking-[0.12em] text-quiet">Covers</dt>
+              <dd className="mt-1 font-display text-lg font-semibold">Police · Rent · Work · Family</dd>
             </div>
             <div className="bg-card px-4 py-3.5">
               <dt className="text-xs uppercase tracking-[0.12em] text-quiet">Languages</dt>
@@ -125,7 +121,7 @@ export default function Home() {
             />
 
             <div className="mt-3 flex items-center justify-between gap-4">
-              <p className="text-xs text-quiet">Answers cite the section they came from.</p>
+              <p className="text-xs text-quiet">Enter to ask · Shift+Enter for a new line</p>
               <button
                 type="button"
                 onClick={handleAsk}
@@ -137,16 +133,18 @@ export default function Home() {
             </div>
           </div>
 
-          <p className="mt-6 text-sm font-medium text-quiet">Or start with one of these</p>
+          <p className="mt-6 text-sm font-medium text-quiet">
+            {lang === "en" ? "Not sure what to ask? Tap one to get an answer" : "Kya poochhein? Kisi par tap karein"}
+          </p>
           <div className="mt-3 grid gap-2 sm:grid-cols-2">
-            {starters.map((s) => (
+            {LANDING_STARTERS.map((s) => (
               <button
-                key={s}
+                key={s.en}
                 type="button"
-                onClick={() => setQuestion(s)}
-                className="rounded-xl border border-line bg-card px-4 py-3 text-left text-sm transition-colors hover:border-primary hover:text-primary"
+                onClick={() => ask(s[lang])}
+                className="rounded-xl border border-line bg-card px-4 py-3 text-left text-sm leading-snug transition-colors hover:border-primary hover:text-primary"
               >
-                {s}
+                {s[lang]}
               </button>
             ))}
           </div>

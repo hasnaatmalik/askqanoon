@@ -12,7 +12,7 @@ function ChatContent() {
     const initialLang = searchParams.get("lang") === "ur" ? "ur" : "en";
 
     return (
-        <main className="flex flex-1 flex-col min-h-0 overflow-hidden bg-background">
+        <main className="flex h-dvh flex-col overflow-hidden bg-background">
             <ChatInterface 
                 onBack={() => router.push("/")} 
                 initialQuestion={initialQuestion}
@@ -24,7 +24,7 @@ function ChatContent() {
 
 export default function ChatPage() {
     return (
-        <Suspense fallback={<div className="flex-1 flex items-center justify-center text-quiet">Loading chat...</div>}>
+        <Suspense fallback={<div className="flex-1 flex items-center justify-center text-quiet">Loading…</div>}>
             <ChatContent />
         </Suspense>
     );
